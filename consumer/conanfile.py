@@ -13,3 +13,6 @@ class DetlibConsumerConan(ConanFile):
         cmake = CMake(self)
         cmake.configure()
         cmake.build()
+
+    def package(self):
+        self.copy("*detconsumer.exe", dst="bin", keep_path=False)
