@@ -25,4 +25,4 @@ pip install conan --upgrade
 
 conan user
 
-tree $HOME
+ls $HOME
