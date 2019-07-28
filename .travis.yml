@@ -26,10 +26,6 @@ matrix:
         name: Getting started
         <<: *linux
         env: FOLDER=scripts
-      - stage: Macos builds
-        name: Getting started
-        <<: *osx
-        env: FOLDER=scripts
 
 script:
  - cd "${FOLDER}"
