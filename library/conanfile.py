@@ -30,9 +30,9 @@ class DeterministicLibConan(ConanFile):
         self.copy("*.lib", dst="lib",
                   src="./{}".format(self.settings.build_type), keep_path=False)
         self.copy("*.dll", dst="bin", keep_path=False)
-        self.copy("*.dylib*", dst="lib", src="build", keep_path=False)
-        self.copy("*.so", dst="lib", src="build", keep_path=False)
-        self.copy("*.a", dst="lib", src="build", keep_path=False)
+        self.copy("*.dylib*", dst="lib", src=".", keep_path=False)
+        self.copy("*.so", dst="lib", src=".", keep_path=False)
+        self.copy("*.a", dst="lib", src=".", keep_path=False)
         self.copy("LICENSE", dst="licenses", src=".", keep_path=False)
 
     def package_info(self):
