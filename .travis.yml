@@ -33,5 +33,5 @@ matrix:
 
 script:
  - cd "${FOLDER}"
- - chmod +x build.sh
+ - chmod +x check.sh
  - ./check.sh
