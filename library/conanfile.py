@@ -12,11 +12,13 @@ class DeterministicLibConan(ConanFile):
     exports_sources = "CMakeLists.txt", "src/mydetlib.cpp", "include/mydetlib.hpp"
     options = {"shared": [True, False],
                "fPIC": [True, False]}
-    default_options = "shared=False"
+    default_options = "shared=False,fPIC=False"
 
     def configure(self):
         if self.settings.compiler == "Visual Studio":
             del self.options.fPIC
+        elif self.options.shared:
+            self.options.fPIC=True
 
     def build(self):
         cmake = CMake(self)
