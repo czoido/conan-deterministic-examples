@@ -21,6 +21,8 @@ fi
 
 pip install conan --upgrade
 
-cp hook/deterministic-build.py $HOME/.conan/hooks/deterministic-build.py
+#cp hook/deterministic-build.py $HOME/.conan/hooks/deterministic-build.py
 
 conan user
+
+tree $HOME
