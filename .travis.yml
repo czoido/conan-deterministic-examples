@@ -12,6 +12,7 @@ linux: &linux
      - conan profile new default --detect
      - conan profile update settings.compiler.libcxx=libstdc++11 default
      - conan config set hooks.deterministic-build
+     - conan config set general.revisions_enabled=True
      - cat $HOME/.conan/conan.conf
      - ls $HOME/.conan/hooks
 
