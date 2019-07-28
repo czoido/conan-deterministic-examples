@@ -84,7 +84,7 @@ def check_library_determinism(path, check_list):
             checksum = get_binary_checksum(bin_file_path)
             #revision = get_revision(out)
             bin_name = str(os.path.basename(bin_file_path))
-            print(Fore.YELLOW + Style.BRIGHT + "Created binary: " + bin_name +
+            print(Fore.YELLOW + Style.BRIGHT + "Created binary: " + bin_file_path +
                   " with checksum " + checksum + Fore.RESET + Style.RESET_ALL)
             if not bin_name in binary_checksums:
                 binary_checksums[bin_name] = checksum
