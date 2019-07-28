@@ -72,5 +72,6 @@ class LibPatcher(object):
 
 
 def post_build(output, conanfile, **kwargs):
+    print("deterministic builds hook")
     lib_patcher = LibPatcher(output, conanfile)
     lib_patcher.patch()
