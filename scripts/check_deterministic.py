@@ -15,6 +15,7 @@ def run(cmd, show=True):
             cmd, shell=True, stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
         result = e.output
+    print(result)
     return result
 
 
