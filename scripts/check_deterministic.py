@@ -15,7 +15,6 @@ def run(cmd, show=True):
             cmd, shell=True, stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
         result = e.output
-    print(result)
     return result
 
 
@@ -36,6 +35,7 @@ def get_binary_names(console_txt):
     bin_files = []
     package_folder = ""
     for line in console_txt.splitlines():
+        print(line)
         binary_extensions = [".lib", ".exe", ".dll", ".a", ".so", ".dylib"]
         line = str(line)
         if any(extension in line for extension in binary_extensions):
