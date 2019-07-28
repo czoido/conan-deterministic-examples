@@ -43,6 +43,8 @@ def get_binary_names(console_txt):
                 bin_files.append(line[line.find("file:")+len("file:")+1:-1])
             elif "Linking" in line and "library" in line:
                 bin_files.append(line[line.find("library")+len("library")+1:-1])
+            elif "Linking" in line and "executable" in line:
+                bin_files.append(line[line.find("bin/")+len("bin/"):-1])
 
         if "Package folder" in line:
             package_folder = os.path.abspath(
