@@ -39,7 +39,11 @@ def get_binary_names(console_txt):
         binary_extensions = [".lib", ".exe", ".dll", ".a", ".so", ".dylib"]
         line = str(line)
         if any(extension in line for extension in binary_extensions) and "Packaged" in line:
-            bin_files.append(line[line.find("file:")+len("file:")+1:-1])
+            if "file:" in line:
+                bin_files.append(line[line.find("file:")+len("file:")+1:-1])
+            else:
+                bin_files.append(line[line.find("library")+len("library")+1:-1])
+
         if "Package folder" in line:
             package_folder = os.path.abspath(
                 line[line.find("Package folder")+len("Package folder")+1:-1])
