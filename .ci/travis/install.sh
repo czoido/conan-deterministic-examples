@@ -19,6 +19,8 @@ if [[ "$(uname -s)" == 'Darwin' ]]; then
     pyenv activate conan
 fi
 
+cp hook/deterministic-build.py $HOME/.conan/hooks/
+
 pip install conan --upgrade
 
 conan user
