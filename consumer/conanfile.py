@@ -16,4 +16,4 @@ class DetlibConsumerConan(ConanFile):
 
     def package(self):
         self.copy("*consumer.exe", dst="bin", keep_path=False)
-        self.copy("*consumer", dst="bin", keep_path=False)
+        self.copy("*consumer", dst="bin", src="bin", keep_path=False)
