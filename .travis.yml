@@ -6,7 +6,8 @@ linux: &linux
    install:
      - chmod +x .ci/travis/install.sh
      - .ci/travis/install.sh
-     - ls $HOME/.conan
+     - mkdir $HOME/.conan/hooks
+     - cp hook/deterministic-build.py /tmp/conan/hooks/deterministic-build.py
    before_script:
      - conan profile new default --detect
      - conan profile update settings.compiler.libcxx=libstdc++11 default
