@@ -17,9 +17,6 @@ class DeterministicLibConan(ConanFile):
     def configure(self):
         if self.settings.compiler == "Visual Studio":
             del self.options.fPIC
-        else:
-            raise ConanInvalidConfiguration(
-                "Library is only supported for Visual Studio")
 
     def build(self):
         cmake = CMake(self)
