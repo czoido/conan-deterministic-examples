@@ -38,10 +38,10 @@ def get_binary_names(console_txt):
     for line in console_txt.splitlines():
         binary_extensions = [".lib", ".exe", ".dll", ".a", ".so", ".dylib"]
         line = str(line)
-        if any(extension in line for extension in binary_extensions) and "Packaged" in line:
-            if "file:" in line:
+        if any(extension in line for extension in binary_extensions):
+            if "Packaged" in line and "file:" in line:
                 bin_files.append(line[line.find("file:")+len("file:")+1:-1])
-            else:
+            elif "Linking" in line and "library" in line:
                 bin_files.append(line[line.find("library")+len("library")+1:-1])
 
         if "Package folder" in line:
