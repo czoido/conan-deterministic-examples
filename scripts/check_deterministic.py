@@ -55,7 +55,7 @@ def get_binary_names(console_txt):
             path = os.path.join(package_folder, subdir, bin_file)
             if os.path.isfile(path):
                 paths.append(path)
-    return paths
+    return list(set(paths))
 
 
 def get_binary_checksum(filename):
