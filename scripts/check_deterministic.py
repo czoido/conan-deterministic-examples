@@ -122,14 +122,14 @@ check_library_determinism("../library", check_packages)
 
 print("\n" + Fore.LIGHTMAGENTA_EX +
       "Create a static library two times changing build directories" + Fore.RESET)
-check_packages = ["user1/channel", "user2/channel"]
+check_packages = ["user1/channel", "user2_rand987654321/channel"]
 check_library_determinism("../library", check_packages)
 
 
 print("\n" + Fore.LIGHTMAGENTA_EX +
       "Create a dynamic library two times changing build directories" + Fore.RESET)
 check_packages = ["user1/channel -o shared=True",
-                  "user2/channel -o shared=True"]
+                  "user2/user2_rand987654321 -o shared=True"]
 check_library_determinism("../library", check_packages)
 
 print("\n" + Fore.LIGHTMAGENTA_EX +
@@ -141,4 +141,10 @@ print("\n" + Fore.LIGHTMAGENTA_EX +
       "Create a executable two times linking dynamic libs without changing anything" + Fore.RESET)
 check_packages = ["user/channel -o mydetlib:shared=True",
                   "user/channel -o mydetlib:shared=True"]
+check_library_determinism("../consumer", check_packages)
+
+print("\n" + Fore.LIGHTMAGENTA_EX +
+      "Create a executable two times linking dynamic libs changing build directories" + Fore.RESET)
+check_packages = ["user/channel -o mydetlib:shared=True",
+                  "user/user2_rand987654321 -o mydetlib:shared=True"]
 check_library_determinism("../consumer", check_packages)
