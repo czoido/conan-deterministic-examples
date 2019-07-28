@@ -1,5 +1,6 @@
 import os
 import hashlib
+from conans.errors import ConanInvalidConfiguration
 from conans import ConanFile, CMake
 
 
