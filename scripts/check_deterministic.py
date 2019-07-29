@@ -2,6 +2,7 @@ import os
 import json
 import shutil
 import subprocess
+from shutil import copyfile
 from colorama import init, Fore, Style
 
 
@@ -35,7 +36,7 @@ def get_binary_names(console_txt):
     bin_files = []
     package_folder = ""
     for line in console_txt.splitlines():
-        print(line)
+        #print(line)
         binary_extensions = [".lib", ".exe", ".dll", ".a", ".so", ".dylib"]
         line = str(line)
         if any(extension in line for extension in binary_extensions):
@@ -100,57 +101,73 @@ def check_library_determinism(path, check_list):
 
 init()
 
-print("\n" + Fore.MAGENTA + "Check library reproducibility" + Fore.RESET)
+# have to add specific checks for each case
+# for example for __FILE__ building in different dirs
+variation_cases = {
+    "base": "Simple library to print text",
+    "macros_date": "Example using __DATE__",
+    "macros_file": "Example using __FILE__",
+    "macros_line": "Example using __LINE__",
+    "macros_time": "Example using __TIME__"
+    }
 
-activate_deterministic_hook(False)
+for name, description in variation_cases.items():
 
-print("\n" + Fore.LIGHTMAGENTA_EX +
-      "Create a static library two times without changing anything" + Fore.RESET)
-check_packages = ["user/channel", "user/channel"]
-check_library_determinism("../library", check_packages)
+    print("\n" + Fore.YELLOW + "CASE: {}".format(description) + Fore.RESET)
 
-activate_deterministic_hook(True)
+    copyfile("../cases/mydetlib_{}.cpp".format(name), "../library/src/mydetlib.cpp")
 
-print("\n" + Fore.LIGHTMAGENTA_EX +
-      "Create a static library two times without changing anything" + Fore.RESET)
-check_packages = ["user/channel", "user/channel"]
-check_library_determinism("../library", check_packages)
+    print("\n" + Fore.MAGENTA + "Check library reproducibility" + Fore.RESET)
 
-print("\n" + Fore.LIGHTMAGENTA_EX +
-      "Create a dynamic library two times without changing anything" + Fore.RESET)
-check_packages = ["user/channel -o shared=True", "user/channel -o shared=True"]
-check_library_determinism("../library", check_packages)
+    activate_deterministic_hook(False)
 
-print("\n" + Fore.LIGHTMAGENTA_EX +
-      "Create a static library two times changing build directories" + Fore.RESET)
-check_packages = ["user1/channel", "user2_rand987654321/channel"]
-check_library_determinism("../library", check_packages)
+    print("\n" + Fore.LIGHTMAGENTA_EX +
+        "Create a static library two times without changing anything" + Fore.RESET)
+    check_packages = ["user/channel", "user/channel"]
+    check_library_determinism("../library", check_packages)
+
+    activate_deterministic_hook(True)
+
+    print("\n" + Fore.LIGHTMAGENTA_EX +
+        "Create a static library two times without changing anything" + Fore.RESET)
+    check_packages = ["user/channel", "user/channel"]
+    check_library_determinism("../library", check_packages)
+
+    print("\n" + Fore.LIGHTMAGENTA_EX +
+        "Create a dynamic library two times without changing anything" + Fore.RESET)
+    check_packages = ["user/channel -o shared=True", "user/channel -o shared=True"]
+    check_library_determinism("../library", check_packages)
+
+    print("\n" + Fore.LIGHTMAGENTA_EX +
+        "Create a static library two times changing build directories" + Fore.RESET)
+    check_packages = ["user1/channel", "user2_rand987654321/channel"]
+    check_library_determinism("../library", check_packages)
 
 
-print("\n" + Fore.LIGHTMAGENTA_EX +
-      "Create a dynamic library two times changing build directories" + Fore.RESET)
-check_packages = ["user1/channel -o shared=True",
-                  "user2/user2_rand987654321 -o shared=True"]
-check_library_determinism("../library", check_packages)
+    print("\n" + Fore.LIGHTMAGENTA_EX +
+        "Create a dynamic library two times changing build directories" + Fore.RESET)
+    check_packages = ["user1/channel -o shared=True",
+                    "user2/user2_rand987654321 -o shared=True"]
+    check_library_determinism("../library", check_packages)
 
-print("\n" + Fore.LIGHTMAGENTA_EX +
-      "Create a executable two times (STATIC LIB) without changing anything" + Fore.RESET)
-check_packages = ["user/channel", "user/channel"]
-check_library_determinism("../consumer", check_packages)
+    print("\n" + Fore.LIGHTMAGENTA_EX +
+        "Create a executable two times (STATIC LIB) without changing anything" + Fore.RESET)
+    check_packages = ["user/channel", "user/channel"]
+    check_library_determinism("../consumer", check_packages)
 
-print("\n" + Fore.LIGHTMAGENTA_EX +
-      "Create a executable two times (STATIC LIB) without changing build directories" + Fore.RESET)
-check_packages = ["user/channel", "user/channel"]
-check_library_determinism("../consumer", check_packages)
+    print("\n" + Fore.LIGHTMAGENTA_EX +
+        "Create a executable two times (STATIC LIB) without changing build directories" + Fore.RESET)
+    check_packages = ["user/channel", "user/channel"]
+    check_library_determinism("../consumer", check_packages)
 
-print("\n" + Fore.LIGHTMAGENTA_EX +
-      "Create a executable two times (DYNAMIC LIBS) without changing anything" + Fore.RESET)
-check_packages = ["user/channel -o mydetlib:shared=True",
-                  "user/channel -o mydetlib:shared=True"]
-check_library_determinism("../consumer", check_packages)
+    print("\n" + Fore.LIGHTMAGENTA_EX +
+        "Create a executable two times (DYNAMIC LIBS) without changing anything" + Fore.RESET)
+    check_packages = ["user/channel -o mydetlib:shared=True",
+                    "user/channel -o mydetlib:shared=True"]
+    check_library_determinism("../consumer", check_packages)
 
-print("\n" + Fore.LIGHTMAGENTA_EX +
-      "Create a executable two times (DYNAMIC LIBS) changing build directories" + Fore.RESET)
-check_packages = ["user/channel -o mydetlib:shared=True",
-                  "user/user2_rand987654321 -o mydetlib:shared=True"]
-check_library_determinism("../consumer", check_packages)
+    print("\n" + Fore.LIGHTMAGENTA_EX +
+        "Create a executable two times (DYNAMIC LIBS) changing build directories" + Fore.RESET)
+    check_packages = ["user/channel -o mydetlib:shared=True",
+                    "user/user2_rand987654321 -o mydetlib:shared=True"]
+    check_library_determinism("../consumer", check_packages)
