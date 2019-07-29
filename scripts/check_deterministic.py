@@ -114,8 +114,9 @@ for name, description in variation_cases.items():
 
     print("\n" + Fore.YELLOW + "CASE: {}".format(description) + Fore.RESET)
 
-    shutil.copy(os.path.join(os.getcwd(),"../cases/mydetlib_{}.cpp".format(name)),
-         os.path.join(os.getcwd(),"../library/src/mydetlib.cpp"))
+    if not os.path.exists("../library/src"):
+        os.mkdir("../library/src")
+    shutil.copy("../cases/mydetlib_{}.cpp".format(name), "../library/src/mydetlib.cpp")
 
     print("\n" + Fore.MAGENTA + "Check library reproducibility" + Fore.RESET)
 
