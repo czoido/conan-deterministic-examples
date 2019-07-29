@@ -13,9 +13,13 @@ environment:
           PROJECT_DIR: scripts
 
 install:
+  - md C:/Users/appveyor/.conan/hooks
+  - xcopy %PROJECT_DIR%/hook/deterministic-build.py C:/Users/appveyor/.conan/hooks/deterministic-build.py  
   - set PATH=%PYTHON%;%PYTHON%/Scripts/;%PATH%
   - pip.exe install conan --upgrade
   - conan user
+  - conan config set hooks.deterministic-build
+  - conan config set general.revisions_enabled=True
 
 test_script:
   - cd %PROJECT_DIR%
