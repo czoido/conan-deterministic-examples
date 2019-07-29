@@ -14,7 +14,7 @@ environment:
 
 install:
   - md C:\Users\appveyor\.conan\hooks
-  - xcopy hook\deterministic-build.py C:\Users\appveyor\.conan\hooks\deterministic-build.py  
+  - xcopy hook\deterministic-build.py C:\Users\appveyor\.conan\hooks
   - set PATH=%PYTHON%;%PYTHON%/Scripts/;%PATH%
   - pip.exe install conan --upgrade
   - conan user
