@@ -113,6 +113,8 @@ variation_cases = {
 
 for name, description in variation_cases.items():
 
+    print(os.getcwd())
+
     print("\n" + Fore.YELLOW + "CASE: {}".format(description) + Fore.RESET)
 
     copyfile("../cases/mydetlib_{}.cpp".format(name), "../library/src/mydetlib.cpp")
