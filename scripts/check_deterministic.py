@@ -2,7 +2,7 @@ import os
 import json
 import shutil
 import subprocess
-from shutil import copyfile
+from shutil import copy
 from colorama import init, Fore, Style
 
 
@@ -113,11 +113,9 @@ variation_cases = {
 
 for name, description in variation_cases.items():
 
-    print(os.getcwd())
-
     print("\n" + Fore.YELLOW + "CASE: {}".format(description) + Fore.RESET)
 
-    copyfile("../cases/mydetlib_{}.cpp".format(name), "../library/src/mydetlib.cpp")
+    copy("../cases/mydetlib_{}.cpp".format(name), "../library/src/mydetlib.cpp")
 
     print("\n" + Fore.MAGENTA + "Check library reproducibility" + Fore.RESET)
 
