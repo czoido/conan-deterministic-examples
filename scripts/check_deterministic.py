@@ -130,7 +130,7 @@ def set_system_rand_time():
         print("System time faked: {}".format(datetime.now()))
 
     time_tuple = (random.randint(1998, 2018), random.randint(
-        1, 12), 6, random.randint(0, 23), random.randint(0, 60), 0, 0,)
+        1, 12), 6, random.randint(0, 23), random.randint(0, 59), 0, 0,)
     if os.environ.get('TRAVIS') == 'true':
         _linux_set_time(time_tuple)
     elif os.environ.get('APPVEYOR') == 'True' and sys.platform == 'win32':
