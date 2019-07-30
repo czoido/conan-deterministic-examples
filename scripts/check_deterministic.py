@@ -168,12 +168,12 @@ for name, description in variation_cases.items():
 
     activate_deterministic_hook(True)
 
-"""
     print("\n" + Fore.LIGHTMAGENTA_EX +
           "Create a static library two times without changing anything" + Fore.RESET)
     check_packages = ["user/channel", "user/channel"]
     check_library_determinism("../library", check_packages)
 
+"""
     print("\n" + Fore.LIGHTMAGENTA_EX +
         "Create a dynamic library two times without changing anything" + Fore.RESET)
     check_packages = ["user/channel -o shared=True", "user/channel -o shared=True"]
