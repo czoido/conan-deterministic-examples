@@ -20,6 +20,7 @@ Work in progress...
 ### Tools
 
 - https://diffoscope.org/
+- https://salsa.debian.org/reproducible-builds/strip-nondeterminism
 - https://github.com/erocarrera/pefile
 - https://github.com/trailofbits/pe-parse
 - https://github.com/smarttechnologies/peparser
