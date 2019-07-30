@@ -60,6 +60,7 @@ class LibPatcher(object):
                                 self._patch_pe(filename)
 
     def _patch_lib(self, filename):
+        self._output.info("Patching {} with md5sum: {}".format(filename,md5sum(filename)))
         pos = 0
         with open(filename, 'r+b') as f:
             header_start = 8
@@ -93,15 +94,14 @@ class LibPatcher(object):
                 self._output.info(
                     "patching timestamp at pos: {}".format(offset))
 
-            self._output.info("Patched file: {}".format(filename))
+            self._output.info("Patched file: {} with md5sum: {}".format(filename,md5sum(filename)))
 
     def _patch_pe(self, filename):
         patch_tool_location = "C:/ducible/ducible.exe"
         if os.path.isfile(patch_tool_location):
-            self._output.info("patching {}".format(filename))
+            self._output.info("Patching {} with md5sum: {}".format(filename,md5sum(filename)))
             self._conanfile.run("{} {}".format(patch_tool_location, filename))
-            self._output.info("md5sum: {}".format(md5sum(filename)))
-            self._output.info("Patched file: {}".format(filename))
+            self._output.info("Patched file: {} with md5sum: {}".format(filename,md5sum(filename)))
 
 
 lib_patcher = LibPatcher()

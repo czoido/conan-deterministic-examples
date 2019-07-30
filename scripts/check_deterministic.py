@@ -37,9 +37,11 @@ def hook_output(console_txt):
     for line in console_txt.splitlines():
         if "HOOK - deterministic" in str(line):
             if "set SOURCE_DATE_EPOCH:" in str(line):
-                print(str(line, "utf-8"))
+                print(Fore.CYAN + str(line, "utf-8") + Fore.RESET)
             elif "Patched file:" in str(line):
-                print(str(line, "utf-8"))
+                print(Fore.CYAN + str(line, "utf-8") + Fore.RESET)
+            elif "Patching".upper() in str(line).upper():
+                print(Fore.CYAN + str(line, "utf-8") + Fore.RESET)
 
 
 def get_binary_names(console_txt):
