@@ -82,10 +82,7 @@ def activate_deterministic_hook(activate):
 def check_library_determinism(path, check_list):
     binary_checksums = {}
     for ref in check_list:
-        time_tuple = (random.randint(1998, 2018), random.randint(
-            1, 12), 6, random.randint(0, 23), random.randint(0, 60), 0, 0,)
-        fake_time(time_tuple)
-        print(datetime.now())
+        set_system_rand_time()
         out = run(
             "cd {} && conan create . {}".format(path, ref))
         bin_files = get_binary_names(out)
@@ -116,8 +113,7 @@ def launch_case(name, description):
                 "../library/src/mydetlib.cpp")
 
 
-def fake_time(time_tuple):
-
+def set_system_rand_time():
     def _win_set_time(time_tuple):
         print("faking Windows system time")
         import win32api
@@ -131,14 +127,18 @@ def fake_time(time_tuple):
         import shlex
         time_string = datetime(*time_tuple).isoformat()
         # May be necessary
-        subprocess.call(shlex.split("timedatectl set-ntp false"))
+        # subprocess.call(shlex.split("timedatectl set-ntp false"))
         subprocess.call(shlex.split("sudo date -s '%s'" % time_string))
         subprocess.call(shlex.split("sudo hwclock -w"))
 
+    time_tuple = (random.randint(1998, 2018), random.randint(
+        1, 12), 6, random.randint(0, 23), random.randint(0, 60), 0, 0,)
     if os.environ.get('TRAVIS') == 'true':
         _linux_set_time(time_tuple)
     elif os.environ.get('APPVEYOR') == 'True' and sys.platform == 'win32':
         _win_set_time(time_tuple)
+    
+    print("System time changed to: {}".format(datetime.now()))
 
 
 init()
@@ -148,9 +148,9 @@ init()
 variation_cases = {
     "base": "Simple library to print text",
     "macros_date": "Example using __DATE__",
+    "macros_time": "Example using __TIME__"
     "macros_file": "Example using __FILE__",
     "macros_line": "Example using __LINE__",
-    "macros_time": "Example using __TIME__"
 }
 
 for name, description in variation_cases.items():
