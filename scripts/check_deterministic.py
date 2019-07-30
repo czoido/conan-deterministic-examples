@@ -32,6 +32,14 @@ def get_revision(console_txt):
     prev = console_txt.find(search_str)
     return console_txt[prev+len(search_str)+1:-6]
 
+def hook_output(console_txt):
+    for line in console_txt.splitlines():
+        if "HOOK - deterministic" in str(line):
+            if "set SOURCE_DATE_EPOCH:" in str(line):
+                print(str(line,"utf-8"))
+            elif "Patched file:" in str(line):
+                print(str(line,"utf-8"))
+
 
 def get_binary_names(console_txt):
     paths = []
@@ -86,6 +94,7 @@ def check_library_determinism(path, check_list):
         out = run(
             "cd {} && conan create . {}".format(path, ref))
         bin_files = get_binary_names(out)
+        hook_output(out)
         for bin_file_path in bin_files:
             checksum = get_binary_checksum(bin_file_path)
             #revision = get_revision(out)
@@ -108,6 +117,7 @@ def set_system_rand_time():
         dayOfWeek = datetime(*time_tuple).isocalendar()[2]
         t = time_tuple[:2] + (dayOfWeek,) + time_tuple[2:]
         win32api.SetSystemTime(*t)
+        print("System time faked: {}".format(datetime.now()))
 
     def _linux_set_time(time_tuple):
         import subprocess
@@ -117,6 +127,7 @@ def set_system_rand_time():
         # subprocess.call(shlex.split("timedatectl set-ntp false"))
         subprocess.call(shlex.split("sudo date -s '%s'" % time_string))
         subprocess.call(shlex.split("sudo hwclock -w"))
+        print("System time faked: {}".format(datetime.now()))
 
     time_tuple = (random.randint(1998, 2018), random.randint(
         1, 12), 6, random.randint(0, 23), random.randint(0, 60), 0, 0,)
@@ -125,7 +136,6 @@ def set_system_rand_time():
     elif os.environ.get('APPVEYOR') == 'True' and sys.platform == 'win32':
         _win_set_time(time_tuple)
     
-    print("System time faked: {}".format(datetime.now()))
 
 
 class Case(object):

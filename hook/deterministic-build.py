@@ -31,9 +31,12 @@ class LibPatcher(object):
             # should be set to last modification of sources with something like:
             # SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)
             # 1564483496
+            timestamp = "1564483496"
             self._old_source_date_epoch = os.environ.get("SOURCE_DATE_EPOCH")
             try:
-                os.environ["SOURCE_DATE_EPOCH"] = "1564483496"
+                os.environ["SOURCE_DATE_EPOCH"] = timestamp
+                self._output.info(
+                    "set SOURCE_DATE_EPOCH: {}".format(timestamp))
             except:
                 pass
 
@@ -52,8 +55,9 @@ class LibPatcher(object):
                         filename = os.path.join(root, filename)
                         if ".lib" in filename and not self._conanfile.options.shared:
                             self._patch_lib(filename)
-                        if ".exe" in filename or ".dll" in filename:
-                            self._patch_pe(filename)
+                        if "CMake" not in filename:
+                            if ".exe" in filename or ".dll" in filename:
+                                self._patch_pe(filename)
 
     def _patch_lib(self, filename):
         pos = 0
@@ -89,19 +93,24 @@ class LibPatcher(object):
                 self._output.info(
                     "patching timestamp at pos: {}".format(offset))
 
+            self._output.info("Patched file: {}".format(filename))
+
     def _patch_pe(self, filename):
         patch_tool_location = "C:/ducible/ducible.exe"
         if os.path.isfile(patch_tool_location):
             self._output.info("patching {}".format(filename))
             self._conanfile.run("{} {}".format(patch_tool_location, filename))
             self._output.info("md5sum: {}".format(md5sum(filename)))
+            self._output.info("Patched file: {}".format(filename))
 
 
 lib_patcher = LibPatcher()
 
+
 def pre_build(output, conanfile, **kwargs):
     lib_patcher.init(output, conanfile)
     lib_patcher.set_environment()
+
 
 def post_build(output, conanfile, **kwargs):
     lib_patcher.patch()
