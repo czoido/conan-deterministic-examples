@@ -10,13 +10,39 @@ from conans.util.files import md5sum
 
 
 class LibPatcher(object):
-    def __init__(self, output, conanfile):
+    def __init__(self):
+        self._old_source_date_epoch = None
+        self._output = None
+        self._conanfile = None
+        self._os = None
+        self._compiler = None
+
+    def init(self, output, conanfile):
         self._output = output
         self._conanfile = conanfile
         self._os = self._conanfile.settings.get_safe(
             'os') or self._conanfile.settings.get_safe('os_build')
         self._compiler = self._conanfile.settings.get_safe('compiler')
         self._output.info('Conan binary patcher plug-in for Windows')
+
+    def set_environment(self):
+        if self._os == "Linux":
+            # set SOURCE_DATE_EPOC to arbitraty value to test functionality
+            # should be set to last modification of sources with something like:
+            # SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)
+            # 1564483496
+            self._old_source_date_epoch = os.environ.get("SOURCE_DATE_EPOCH")
+            try:
+                os.environ["SOURCE_DATE_EPOCH"] = "1564483496"
+            except:
+                pass
+
+    def reset_environment(self):
+        if self._os == "Linux":
+            if self._old_source_date_epoch is None:
+                del os.environ["SOURCE_DATE_EPOCH"]
+            else:
+                os.environ["SOURCE_DATE_EPOCH"] = self._old_source_date_epoch
 
     def patch(self):
         if self._os == "Windows":
@@ -71,7 +97,15 @@ class LibPatcher(object):
             self._output.info("md5sum: {}".format(md5sum(filename)))
 
 
+lib_patcher = LibPatcher()
+
+
 def post_build(output, conanfile, **kwargs):
     print("deterministic builds hook")
-    lib_patcher = LibPatcher(output, conanfile)
+    lib_patcher.init(output, conanfile)
     lib_patcher.patch()
+    lib_patcher.set_environment()
+
+
+def post_package(output, conanfile, conanfile_path, **kwargs):
+    lib_patcher.reset_environment()
