@@ -32,13 +32,14 @@ def get_revision(console_txt):
     prev = console_txt.find(search_str)
     return console_txt[prev+len(search_str)+1:-6]
 
+
 def hook_output(console_txt):
     for line in console_txt.splitlines():
         if "HOOK - deterministic" in str(line):
             if "set SOURCE_DATE_EPOCH:" in str(line):
-                print(str(line,"utf-8"))
+                print(str(line, "utf-8"))
             elif "Patched file:" in str(line):
-                print(str(line,"utf-8"))
+                print(str(line, "utf-8"))
 
 
 def get_binary_names(console_txt):
@@ -46,7 +47,6 @@ def get_binary_names(console_txt):
     bin_files = []
     package_folder = ""
     for line in console_txt.splitlines():
-        # print(line)
         binary_extensions = [".lib", ".exe", ".dll", ".a", ".so", ".dylib"]
         line = str(line)
         if any(extension in line for extension in binary_extensions):
@@ -87,30 +87,6 @@ def activate_deterministic_hook(activate):
               Fore.CYAN + "OFF" + Fore.RESET)
 
 
-def check_library_determinism(path, check_list):
-    binary_checksums = {}
-    for ref in check_list:
-        set_system_rand_time()
-        out = run(
-            "cd {} && conan create . {}".format(path, ref))
-        bin_files = get_binary_names(out)
-        hook_output(out)
-        for bin_file_path in bin_files:
-            checksum = get_binary_checksum(bin_file_path)
-            #revision = get_revision(out)
-            bin_name = str(os.path.basename(bin_file_path))
-            print(Fore.YELLOW + Style.BRIGHT + "Created binary: " + bin_file_path +
-                  " with checksum " + checksum + Fore.RESET + Style.RESET_ALL)
-            if not bin_name in binary_checksums:
-                binary_checksums[bin_name] = checksum
-            elif checksum not in binary_checksums[bin_name]:
-                print(Fore.RED + Style.BRIGHT +
-                      "binaries don't match!" + Fore.RESET + Style.RESET_ALL)
-                break
-            else:
-                print(Fore.GREEN + Style.BRIGHT +
-                      "binaries match!" + Fore.RESET + Style.RESET_ALL)
-
 def set_system_rand_time():
     def _win_set_time(time_tuple):
         import win32api
@@ -123,8 +99,6 @@ def set_system_rand_time():
         import subprocess
         import shlex
         time_string = datetime(*time_tuple).isoformat()
-        # May be necessary
-        # subprocess.call(shlex.split("timedatectl set-ntp false"))
         subprocess.call(shlex.split("sudo date -s '%s'" % time_string))
         subprocess.call(shlex.split("sudo hwclock -w"))
         print("System time faked: {}".format(datetime.now()))
@@ -135,91 +109,96 @@ def set_system_rand_time():
         _linux_set_time(time_tuple)
     elif os.environ.get('APPVEYOR') == 'True' and sys.platform == 'win32':
         _win_set_time(time_tuple)
-    
+
+
+class Check(object):
+    def __init__(self, folder, check_args):
+        self._check_args = check_args
+        self._folder = folder
+
+    def check_library_determinism(self):
+        if not os.path.exists("../library/src"):
+            os.mkdir("../library/src")
+
+        binary_checksums = {}
+        for check in self._check_args:
+            for ref, copy_files in check.items():
+                for cp_file in copy_files:
+                    shutil.copy("../cases/{}".format(cp_file),
+                                "../library/src/mydetlib.cpp")
+
+                set_system_rand_time()
+                out = run(
+                    "cd {} && conan create . {}".format(self._folder, ref))
+                bin_files = get_binary_names(out)
+                hook_output(out)
+                for bin_file_path in bin_files:
+                    checksum = get_binary_checksum(bin_file_path)
+                    #revision = get_revision(out)
+                    bin_name = str(os.path.basename(bin_file_path))
+                    print(Fore.YELLOW + Style.BRIGHT + "Created binary: " + bin_file_path +
+                          " with checksum " + checksum + Fore.RESET + Style.RESET_ALL)
+                    if not bin_name in binary_checksums:
+                        binary_checksums[bin_name] = checksum
+                    elif checksum not in binary_checksums[bin_name]:
+                        print(Fore.RED + Style.BRIGHT +
+                              "binaries don't match!" + Fore.RESET + Style.RESET_ALL)
+                        break
+                    else:
+                        print(Fore.GREEN + Style.BRIGHT +
+                              "binaries match!" + Fore.RESET + Style.RESET_ALL)
 
 
 class Case(object):
-    def __init__(self, name, copy_files):
+    def __init__(self, name, checks, activate_hook):
         self._name = name
-        self._copy_files = copy_files
+        self._activate_hook = activate_hook
+        self._checks = checks
 
     def launch_case(self):
-        print("\n" + Fore.YELLOW + "CASE: {}".format(self._name) + Fore.RESET)
-        if not os.path.exists("../library/src"):
-            os.mkdir("../library/src")
-        for cp_file in self._copy_files:            
-            shutil.copy("../cases/{}".format(cp_file),
-                        "../library/src/mydetlib.cpp")
+        print("\n" + Fore.LIGHTMAGENTA_EX +
+              "CASE: {}".format(self._name) + Fore.RESET)
+        activate_deterministic_hook(self._activate_hook)
+        self._checks.check_library_determinism()
+
 
 init()
 
-# have to add specific checks for each case
-# for example for __FILE__ building in different dirs
+checks_nothing = [
+    {"user/channel": ["mydetlib_base.cpp"]},
+    {"user/channel": ["mydetlib_base.cpp"]}
+]
+
+checks_date = [
+    {"user/channel": ["mydetlib_macros_date.cpp"]},
+    {"user/channel": ["mydetlib_macros_date.cpp"]}
+]
+
+checks_time = [
+    {"user/channel": ["mydetlib_macros_time.cpp"]},
+    {"user/channel": ["mydetlib_macros_time.cpp"]}
+]
+
+checks_file = [
+    {"user/channel": ["mydetlib_macros_file.cpp"]},
+    {"user/channel": ["mydetlib_macros_file.cpp"]}
+]
+
+checks_line = [
+    {"user/channel": ["mydetlib_macros_line.cpp"]},
+    {"user/channel": ["mydetlib_macros_line.cpp"]}
+]
+
 variation_cases = [
-    Case("Simple library to print text",  ["mydetlib_base.cpp"]),
-    Case("Example using __DATE__", ["mydetlib_macros_date.cpp"]),
-    Case("Example using __TIME__", ["mydetlib_macros_time.cpp"]),
-    Case("Example using __FILE__", ["mydetlib_macros_file.cpp"]),
-    Case("Example using __LINE__", ["mydetlib_macros_line.cpp"])]
+    Case("Empty library", Check("../library", checks_nothing), True),
+    Case("Library using __DATE__ macro", Check(
+        "../library", checks_date), True),
+    Case("Library using __TIME__ macro", Check(
+        "../library", checks_time), True),
+    Case("Library using __FILE__ macro", Check(
+        "../library", checks_file), True),
+    Case("Library using __LINE__ macro", Check("../library", checks_line), True)
+]
 
 for case in variation_cases:
-
     case.launch_case()
-
-    print("\n" + Fore.MAGENTA + "Check library reproducibility" + Fore.RESET)
-
-    activate_deterministic_hook(False)
-
-    print("\n" + Fore.LIGHTMAGENTA_EX +
-          "Create a static library two times without changing anything" + Fore.RESET)
-    check_packages = ["user/channel", "user/channel"]
-    check_library_determinism("../library", check_packages)
-
-    activate_deterministic_hook(True)
-
-    print("\n" + Fore.LIGHTMAGENTA_EX +
-          "Create a static library two times without changing anything" + Fore.RESET)
-    check_packages = ["user/channel", "user/channel"]
-    check_library_determinism("../library", check_packages)
-
-"""
-    print("\n" + Fore.LIGHTMAGENTA_EX +
-        "Create a dynamic library two times without changing anything" + Fore.RESET)
-    check_packages = ["user/channel -o shared=True", "user/channel -o shared=True"]
-    check_library_determinism("../library", check_packages)
-
-    print("\n" + Fore.LIGHTMAGENTA_EX +
-        "Create a static library two times changing build directories" + Fore.RESET)
-    check_packages = ["user1/channel", "user2_rand987654321/channel"]
-    check_library_determinism("../library", check_packages)
-
-
-    print("\n" + Fore.LIGHTMAGENTA_EX +
-        "Create a dynamic library two times changing build directories" + Fore.RESET)
-    check_packages = ["user1/channel -o shared=True",
-                    "user2/user2_rand987654321 -o shared=True"]
-    check_library_determinism("../library", check_packages)
-
-    print("\n" + Fore.LIGHTMAGENTA_EX +
-        "Create a executable two times (STATIC LIB) without changing anything" + Fore.RESET)
-    check_packages = ["user/channel", "user/channel"]
-    check_library_determinism("../consumer", check_packages)
-
-    print("\n" + Fore.LIGHTMAGENTA_EX +
-        "Create a executable two times (STATIC LIB) without changing build directories" + Fore.RESET)
-    check_packages = ["user/channel", "user/channel"]
-    check_library_determinism("../consumer", check_packages)
-
-    print("\n" + Fore.LIGHTMAGENTA_EX +
-        "Create a executable two times (DYNAMIC LIBS) without changing anything" + Fore.RESET)
-    check_packages = ["user/channel -o mydetlib:shared=True",
-                    "user/channel -o mydetlib:shared=True"]
-    check_library_determinism("../consumer", check_packages)
-
-    print("\n" + Fore.LIGHTMAGENTA_EX +
-        "Create a executable two times (DYNAMIC LIBS) changing build directories" + Fore.RESET)
-    check_packages = ["user/channel -o mydetlib:shared=True",
-                    "user/user2_rand987654321 -o mydetlib:shared=True"]
-    check_library_determinism("../consumer", check_packages)
-
-"""
