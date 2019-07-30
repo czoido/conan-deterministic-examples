@@ -99,13 +99,10 @@ class LibPatcher(object):
 
 lib_patcher = LibPatcher()
 
-
-def post_build(output, conanfile, **kwargs):
-    print("deterministic builds hook")
+def pre_build(output, conanfile, **kwargs):
     lib_patcher.init(output, conanfile)
-    lib_patcher.patch()
     lib_patcher.set_environment()
 
-
-def post_package(output, conanfile, conanfile_path, **kwargs):
+def post_build(output, conanfile, **kwargs):
+    lib_patcher.patch()
     lib_patcher.reset_environment()
