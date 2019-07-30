@@ -148,9 +148,9 @@ init()
 variation_cases = {
     "base": "Simple library to print text",
     "macros_date": "Example using __DATE__",
-    "macros_time": "Example using __TIME__"
+    "macros_time": "Example using __TIME__",
     "macros_file": "Example using __FILE__",
-    "macros_line": "Example using __LINE__",
+    "macros_line": "Example using __LINE__"
 }
 
 for name, description in variation_cases.items():
