@@ -1,7 +1,9 @@
 import os
+import sys
 import json
 import shutil
 import subprocess
+from datetime import datetime
 from colorama import init, Fore, Style
 
 
@@ -35,14 +37,15 @@ def get_binary_names(console_txt):
     bin_files = []
     package_folder = ""
     for line in console_txt.splitlines():
-        #print(line)
+        # print(line)
         binary_extensions = [".lib", ".exe", ".dll", ".a", ".so", ".dylib"]
         line = str(line)
         if any(extension in line for extension in binary_extensions):
             if "Packaged" in line and "file:" in line:
                 bin_files.append(line[line.find("file:")+len("file:")+1:-1])
             elif "Linking" in line and "library" in line:
-                bin_files.append(line[line.find("library")+len("library")+1:-1])
+                bin_files.append(
+                    line[line.find("library")+len("library")+1:-1])
         else:
             if "Linking" in line and "executable" in line:
                 bin_files.append(line[line.find("bin")+len("bin")+1:-1])
@@ -97,14 +100,56 @@ def check_library_determinism(path, check_list):
                 print(Fore.GREEN + Style.BRIGHT +
                       "binaries match!" + Fore.RESET + Style.RESET_ALL)
 
+
 def launch_case(name, description):
     print("\n" + Fore.YELLOW + "CASE: {}".format(description) + Fore.RESET)
 
     if not os.path.exists("../library/src"):
         os.mkdir("../library/src")
 
-    shutil.copy("../cases/mydetlib_{}.cpp".format(name), "../library/src/mydetlib.cpp")
+    shutil.copy("../cases/mydetlib_{}.cpp".format(name),
+                "../library/src/mydetlib.cpp")
 
+
+def fake_time(time_tuple):
+
+    def _win_set_time(time_tuple):
+        print("faking Windows system time")
+        import win32api
+        dayOfWeek = datetime(*time_tuple).isocalendar()[2]
+        t = time_tuple[:2] + (dayOfWeek,) + time_tuple[2:]
+        win32api.SetSystemTime(*t)
+
+    def _linux_set_time(time_tuple):
+        print("faking Linux system time")
+        import subprocess
+        import shlex
+        time_string = datetime(*time_tuple).isoformat()
+        # May be necessary
+        subprocess.call(shlex.split("timedatectl set-ntp false"))
+        subprocess.call(shlex.split("sudo date -s '%s'" % time_string))
+        subprocess.call(shlex.split("sudo hwclock -w"))
+
+    if os.environ.get('TRAVIS') == 'true':
+        _linux_set_time(time_tuple)
+    elif os.environ.get('APPVEYOR ') == 'True ' and sys.platform == 'win32':
+        _win_set_time(time_tuple)
+
+
+time_tuple = (2012,  # Year
+                9,  # Month
+                6,  # Day
+                0,  # Hour
+                38,  # Minute
+                0,  # Second
+                0,  # Millisecond
+                )
+
+fake_time(time_tuple)
+
+print(datetime.now())
+
+"""
 
 init()
 
@@ -116,9 +161,12 @@ variation_cases = {
     "macros_file": "Example using __FILE__",
     "macros_line": "Example using __LINE__",
     "macros_time": "Example using __TIME__"
-    }
+}
 
 for name, description in variation_cases.items():
+
+    istravis = 
+    isappveyor = 
 
     launch_case(name, description)
 
@@ -127,18 +175,17 @@ for name, description in variation_cases.items():
     activate_deterministic_hook(False)
 
     print("\n" + Fore.LIGHTMAGENTA_EX +
-        "Create a static library two times without changing anything" + Fore.RESET)
+          "Create a static library two times without changing anything" + Fore.RESET)
     check_packages = ["user/channel", "user/channel"]
     check_library_determinism("../library", check_packages)
 
     activate_deterministic_hook(True)
 
     print("\n" + Fore.LIGHTMAGENTA_EX +
-        "Create a static library two times without changing anything" + Fore.RESET)
+          "Create a static library two times without changing anything" + Fore.RESET)
     check_packages = ["user/channel", "user/channel"]
     check_library_determinism("../library", check_packages)
 
-"""
     print("\n" + Fore.LIGHTMAGENTA_EX +
         "Create a dynamic library two times without changing anything" + Fore.RESET)
     check_packages = ["user/channel -o shared=True", "user/channel -o shared=True"]
