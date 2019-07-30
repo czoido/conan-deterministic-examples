@@ -139,7 +139,7 @@ class Case(object):
             os.mkdir("../library/src")
         for cp_file in self._copy_files:            
             shutil.copy("../cases/{}".format(cp_file),
-                        "../library/src")
+                        "../library/src/mydetlib.cpp")
 
 init()
 
@@ -148,9 +148,9 @@ init()
 variation_cases = [
     Case("Simple library to print text",  ["mydetlib_base.cpp"]),
     Case("Example using __DATE__", ["mydetlib_macros_date.cpp"]),
-    Case("Example using __TIME__", ["mydetlib_macros_date.cpp"]),
-    Case("Example using __FILE__", ["mydetlib_macros_date.cpp"]),
-    Case("Example using __LINE__", ["mydetlib_macros_date.cpp"])]
+    Case("Example using __TIME__", ["mydetlib_macros_time.cpp"]),
+    Case("Example using __FILE__", ["mydetlib_macros_file.cpp"]),
+    Case("Example using __LINE__", ["mydetlib_macros_line.cpp"])]
 
 for case in variation_cases:
 
