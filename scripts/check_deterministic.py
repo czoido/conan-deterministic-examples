@@ -3,6 +3,7 @@ import sys
 import json
 import shutil
 import subprocess
+import random
 from datetime import datetime
 from colorama import init, Fore, Style
 
@@ -81,6 +82,10 @@ def activate_deterministic_hook(activate):
 def check_library_determinism(path, check_list):
     binary_checksums = {}
     for ref in check_list:
+        time_tuple = (random.randint(1998, 2018), random.randint(
+            1, 12), 6, random.randint(0, 23), random.randint(0, 60), 0, 0,)
+        fake_time(time_tuple)
+        print(datetime.now())
         out = run(
             "cd {} && conan create . {}".format(path, ref))
         bin_files = get_binary_names(out)
@@ -136,21 +141,6 @@ def fake_time(time_tuple):
         _win_set_time(time_tuple)
 
 
-time_tuple = (2012,  # Year
-                9,  # Month
-                6,  # Day
-                0,  # Hour
-                38,  # Minute
-                0,  # Second
-                0,  # Millisecond
-                )
-
-fake_time(time_tuple)
-
-print(datetime.now())
-
-"""
-
 init()
 
 # have to add specific checks for each case
@@ -165,9 +155,6 @@ variation_cases = {
 
 for name, description in variation_cases.items():
 
-    istravis = 
-    isappveyor = 
-
     launch_case(name, description)
 
     print("\n" + Fore.MAGENTA + "Check library reproducibility" + Fore.RESET)
@@ -181,6 +168,7 @@ for name, description in variation_cases.items():
 
     activate_deterministic_hook(True)
 
+"""
     print("\n" + Fore.LIGHTMAGENTA_EX +
           "Create a static library two times without changing anything" + Fore.RESET)
     check_packages = ["user/channel", "user/channel"]
