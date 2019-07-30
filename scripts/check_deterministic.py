@@ -102,27 +102,14 @@ def check_library_determinism(path, check_list):
                 print(Fore.GREEN + Style.BRIGHT +
                       "binaries match!" + Fore.RESET + Style.RESET_ALL)
 
-
-def launch_case(name, description):
-    print("\n" + Fore.YELLOW + "CASE: {}".format(description) + Fore.RESET)
-
-    if not os.path.exists("../library/src"):
-        os.mkdir("../library/src")
-
-    shutil.copy("../cases/mydetlib_{}.cpp".format(name),
-                "../library/src/mydetlib.cpp")
-
-
 def set_system_rand_time():
     def _win_set_time(time_tuple):
-        print("faking Windows system time")
         import win32api
         dayOfWeek = datetime(*time_tuple).isocalendar()[2]
         t = time_tuple[:2] + (dayOfWeek,) + time_tuple[2:]
         win32api.SetSystemTime(*t)
 
     def _linux_set_time(time_tuple):
-        print("faking Linux system time")
         import subprocess
         import shlex
         time_string = datetime(*time_tuple).isoformat()
@@ -138,24 +125,36 @@ def set_system_rand_time():
     elif os.environ.get('APPVEYOR') == 'True' and sys.platform == 'win32':
         _win_set_time(time_tuple)
     
-    print("System time changed to: {}".format(datetime.now()))
+    print("System time faked: {}".format(datetime.now()))
 
+
+class Case(object):
+    def __init__(self, name, copy_files):
+        self._name = name
+        self._copy_files = copy_files
+
+    def launch_case(self):
+        print("\n" + Fore.YELLOW + "CASE: {}".format(self._name) + Fore.RESET)
+        if not os.path.exists("../library/src"):
+            os.mkdir("../library/src")
+        for cp_file in self._copy_files:            
+            shutil.copy("../cases/{}".format(cp_file),
+                        "../library/src")
 
 init()
 
 # have to add specific checks for each case
 # for example for __FILE__ building in different dirs
-variation_cases = {
-    "base": "Simple library to print text",
-    "macros_date": "Example using __DATE__",
-    "macros_time": "Example using __TIME__",
-    "macros_file": "Example using __FILE__",
-    "macros_line": "Example using __LINE__"
-}
+variation_cases = [
+    Case("Simple library to print text",  ["mydetlib_base.cpp"]),
+    Case("Example using __DATE__", ["mydetlib_macros_date.cpp"]),
+    Case("Example using __TIME__", ["mydetlib_macros_date.cpp"]),
+    Case("Example using __FILE__", ["mydetlib_macros_date.cpp"]),
+    Case("Example using __LINE__", ["mydetlib_macros_date.cpp"])]
 
-for name, description in variation_cases.items():
+for case in variation_cases:
 
-    launch_case(name, description)
+    case.launch_case()
 
     print("\n" + Fore.MAGENTA + "Check library reproducibility" + Fore.RESET)
 
