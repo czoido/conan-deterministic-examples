@@ -97,6 +97,14 @@ def check_library_determinism(path, check_list):
                 print(Fore.GREEN + Style.BRIGHT +
                       "binaries match!" + Fore.RESET + Style.RESET_ALL)
 
+def launch_case(name, description):
+    print("\n" + Fore.YELLOW + "CASE: {}".format(description) + Fore.RESET)
+
+    if not os.path.exists("../library/src"):
+        os.mkdir("../library/src")
+
+    shutil.copy("../cases/mydetlib_{}.cpp".format(name), "../library/src/mydetlib.cpp")
+
 
 init()
 
@@ -112,11 +120,7 @@ variation_cases = {
 
 for name, description in variation_cases.items():
 
-    print("\n" + Fore.YELLOW + "CASE: {}".format(description) + Fore.RESET)
-
-    if not os.path.exists("../library/src"):
-        os.mkdir("../library/src")
-    shutil.copy("../cases/mydetlib_{}.cpp".format(name), "../library/src/mydetlib.cpp")
+    launch_case(name, description)
 
     print("\n" + Fore.MAGENTA + "Check library reproducibility" + Fore.RESET)
 
@@ -134,6 +138,7 @@ for name, description in variation_cases.items():
     check_packages = ["user/channel", "user/channel"]
     check_library_determinism("../library", check_packages)
 
+"""
     print("\n" + Fore.LIGHTMAGENTA_EX +
         "Create a dynamic library two times without changing anything" + Fore.RESET)
     check_packages = ["user/channel -o shared=True", "user/channel -o shared=True"]
@@ -172,3 +177,5 @@ for name, description in variation_cases.items():
     check_packages = ["user/channel -o mydetlib:shared=True",
                     "user/user2_rand987654321 -o mydetlib:shared=True"]
     check_library_determinism("../consumer", check_packages)
+
+""""
