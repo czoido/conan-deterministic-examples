@@ -20,6 +20,7 @@ install:
   - conan user
   - conan config set hooks.deterministic-build
   - conan config set general.revisions_enabled=True
+  - pip.exe install pywin32
 
 test_script:
   - cd %PROJECT_DIR%
