@@ -132,7 +132,7 @@ def fake_time(time_tuple):
 
     if os.environ.get('TRAVIS') == 'true':
         _linux_set_time(time_tuple)
-    elif os.environ.get('APPVEYOR ') == 'True' and sys.platform == 'win32':
+    elif os.environ.get('APPVEYOR') == 'True' and sys.platform == 'win32':
         _win_set_time(time_tuple)
 
 
