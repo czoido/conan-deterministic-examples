@@ -158,7 +158,8 @@ class Case(object):
         self._checks = checks
 
     def launch_case(self):
-        print("\n" + Fore.LIGHTMAGENTA_EX +
+        print("\n")
+        print(Fore.LIGHTMAGENTA_EX +
               "CASE: {}".format(self._name) + Fore.RESET)
         activate_deterministic_hook(self._activate_hook)
         self._checks.check_library_determinism()
