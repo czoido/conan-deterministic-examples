@@ -178,4 +178,4 @@ for name, description in variation_cases.items():
                     "user/user2_rand987654321 -o mydetlib:shared=True"]
     check_library_determinism("../consumer", check_packages)
 
-""""
+"""
