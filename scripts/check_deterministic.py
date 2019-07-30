@@ -117,6 +117,7 @@ class Check(object):
     def __init__(self, folder, check_args):
         self._check_args = check_args
         self._folder = folder
+        self.result_deterministic = False
 
     def check_library_determinism(self):
         if not os.path.exists("../library/src"):
@@ -147,6 +148,7 @@ class Check(object):
                               "binaries don't match!" + Fore.RESET + Style.RESET_ALL)
                         break
                     else:
+                        self.result_deterministic = True
                         print(Fore.GREEN + Style.BRIGHT +
                               "binaries match!" + Fore.RESET + Style.RESET_ALL)
 
@@ -163,6 +165,12 @@ class Case(object):
               "CASE: {}".format(self._name) + Fore.RESET)
         activate_deterministic_hook(self._activate_hook)
         self._checks.check_library_determinism()
+
+    def print_result(self):
+        msg = (
+            Fore.GREEN + "SUCCESS") if self._checks.result_deterministic else (Fore.RED + "FAIL")
+        print(Fore.LIGHTMAGENTA_EX +
+              "CASE: {} ".format(self._name) + msg + Fore.RESET)
 
 
 init()
@@ -183,8 +191,8 @@ checks_time = [
 ]
 
 checks_file = [
-    {"user/channel": ["mydetlib_macros_file.cpp"]},
-    {"user/channel": ["mydetlib_macros_file.cpp"]}
+    {"user/channel1": ["mydetlib_macros_file.cpp"]},
+    {"user/channel2": ["mydetlib_macros_file.cpp"]}
 ]
 
 checks_line = [
@@ -205,3 +213,6 @@ variation_cases = [
 
 for case in variation_cases:
     case.launch_case()
+
+for case in variation_cases:
+    case.print_result()
