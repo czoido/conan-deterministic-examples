@@ -29,6 +29,7 @@ osx: &osx
 matrix:
    include:
       - stage: Linux builds
+        sudo: true
         name: Getting started
         <<: *linux
         env: FOLDER=scripts
