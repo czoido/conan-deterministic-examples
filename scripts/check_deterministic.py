@@ -193,7 +193,8 @@ checks_nothing_release = [
         "command": "user/channel -s build_type=Release",
         "folder": "../library",
         "sources":  {
-            "../cases/mydetlib_base.cpp": "../library/src/mydetlib.cpp"
+            "../cases/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
+            "../cases/CMakeListsLib.txt": "../library/CMakeLists.txt"
         }
     },
     {
@@ -397,22 +398,21 @@ checks_lto_flags = [
         "command": "user/channel -s build_type=Release",
         "folder": "../library",
         "sources":  {
-            "../cases/CMakeListsLto.txt": "../library/CMakeLists.txt"
+            "../cases/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
+            "../cases/CMakeListsLibLto.txt": "../library/CMakeLists.txt"
         }
     },
     {
         "command": "user/channel -s build_type=Release",
         "folder": "../library",
         "sources":  {
-            "../cases/CMakeListsLto.txt": "../library/CMakeLists.txt"
+            "../cases/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
+            "../cases/CMakeListsLibLto.txt": "../library/CMakeLists.txt"
         }
     }
 ]
 
-
-
 variation_cases = [
-    Case("Use LTO flags", checks_lto_flags, False),
     Case("Empty library Release", checks_nothing_release, False),
     Case("Empty library Debug", checks_nothing_debug, False),
     Case("Empty library Release, 2 dirs", checks_nothing_release_2_dirs, False),
@@ -432,7 +432,9 @@ variation_cases = [
     Case("Initialized data Debug", checks_uninitialized_debug, False),
     Case("Initialized data Release", checks_uninitialized_release, False),
     Case("Uninitialized data Debug", checks_uninitialized_debug, False),
-    Case("Uninitialized data Release", checks_uninitialized_release, False)]
+    Case("Uninitialized data Release", checks_uninitialized_release, False),
+    Case("Use LTO flags", checks_lto_flags, False),
+]
 
 results = {}
 

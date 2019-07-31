@@ -27,13 +27,12 @@ class DeterministicLibConan(ConanFile):
         cmake.build()
 
     def package(self):
-        self.copy("*.hpp", dst="include", src="include", keep_path=False)
-        self.copy("*.lib", dst="lib",
-                  src="./{}".format(self.settings.build_type), keep_path=False)
+        self.copy("*.hpp", dst="include", keep_path=False)
+        self.copy("*.lib", dst="lib", keep_path=False)
         self.copy("*.dll", dst="bin", keep_path=False)
-        self.copy("*.dylib*", dst="lib", src=".", keep_path=False)
-        self.copy("*.so", dst="lib", src=".", keep_path=False)
-        self.copy("*.a", dst="lib", src=".", keep_path=False)
+        self.copy("*.dylib*", dst="lib", keep_path=False)
+        self.copy("*.so", dst="lib", keep_path=False)
+        self.copy("*.a", dst="lib", keep_path=False)
         self.copy("LICENSE", dst="licenses", src=".", keep_path=False)
 
     def package_info(self):

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(DetlibConsumerConan)
+project(DeterministicHello)
 
 SET(CMAKE_CXX_STANDARD 11)
 SET(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -9,5 +9,8 @@ add_definitions("-flto")
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
-add_executable(detconsumer src/main.cpp)
-target_link_libraries(detconsumer ${CONAN_LIBS})
+add_library(mydetlib ./src/mydetlib.cpp ./include/mydetlib.hpp)
+
+if (BUILD_SHARED_LIBS)
+    target_compile_definitions(mydetlib PUBLIC EXPORTDLL)
+endif()
