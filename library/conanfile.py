@@ -13,6 +13,7 @@ class DeterministicLibConan(ConanFile):
     options = {"shared": [True, False],
                "fPIC": [True, False]}
     default_options = "shared=False", "fPIC=True"
+    generators = "cmake"
 
     def configure(self):
         if self.settings.compiler == "Visual Studio":
