@@ -148,6 +148,10 @@ class Check(object):
                     elif checksum not in binary_checksums[bin_name]:
                         print(Fore.RED + Style.BRIGHT +
                               "binaries don't match!" + Fore.RESET + Style.RESET_ALL)
+                        if hook_state:
+                            self.result_deterministic_hook_on = False
+                        else:
+                            self.result_deterministic_hook_off = False
                         break
                     else:
                         if hook_state:
