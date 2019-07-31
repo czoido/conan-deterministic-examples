@@ -392,7 +392,27 @@ checks_initialized_release = [
     }
 ]
 
+checks_lto_flags = [
+    {
+        "command": "user/channel -s build_type=Release",
+        "folder": "../library",
+        "sources":  {
+            "../cases/CMakeListsLto.txt": "../library/CMakeLists.txt"
+        }
+    },
+    {
+        "command": "user/channel -s build_type=Release",
+        "folder": "../library",
+        "sources":  {
+            "../cases/CMakeListsLto.txt": "../library/CMakeLists.txt"
+        }
+    }
+]
+
+
+
 variation_cases = [
+    Case("Use LTO flags", checks_lto_flags, False),
     Case("Empty library Release", checks_nothing_release, False),
     Case("Empty library Debug", checks_nothing_debug, False),
     Case("Empty library Release, 2 dirs", checks_nothing_release_2_dirs, False),
