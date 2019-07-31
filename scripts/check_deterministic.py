@@ -149,11 +149,11 @@ class Check(object):
                 elif checksum not in binary_checksums[bin_name]["checksum"]:
                     print(Fore.RED + Style.BRIGHT +
                           "binaries don't match!" + Fore.RESET + Style.RESET_ALL)
-                    binary_checksums[bin_name]["fail"]=False
+                    binary_checksums[bin_name]["fail"]=True
                 else:
                     print(Fore.GREEN + Style.BRIGHT +
                           "binaries match!" + Fore.RESET + Style.RESET_ALL)
-                    binary_checksums[bin_name]["fail"]=True
+                    binary_checksums[bin_name]["fail"]=False
 
         for _,data in binary_checksums.items():
             if data["fail"]:
@@ -177,7 +177,7 @@ class Case(object):
 def print_results(results):
     header_justify = 10
     print(Fore.LIGHTMAGENTA_EX +
-          "".ljust(40) + "HOOK OFF".ljust(header_justify) + "HOOK ON".ljust(header_justify) + Fore.RESET)
+          "".ljust(42) + "HOOK OFF".ljust(header_justify) + "HOOK ON".ljust(header_justify) + Fore.RESET)
     result_msg = {
         None: Fore.WHITE + "UNKNOWN".ljust(header_justify),
         False: Fore.RED + "FAIL".ljust(header_justify),
