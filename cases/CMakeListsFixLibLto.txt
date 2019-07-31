@@ -18,7 +18,7 @@ foreach(_file ${LIB_SOURCES})
     set_property(SOURCE ${_file} APPEND_STRING PROPERTY COMPILE_FLAGS "-frandom-seed=0x${checksum}")
 endforeach()
 
-add_library(mydetlib)
+add_library(mydetlib ${LIB_SOURCES})
 
 if (BUILD_SHARED_LIBS)
     target_compile_definitions(mydetlib PUBLIC EXPORTDLL)
