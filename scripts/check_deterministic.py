@@ -226,26 +226,58 @@ checks_line = [
 ]
 
 checks_uninitialized_debug = [
-    {"user/channel": ["mydetlib_uninitialized.cpp"]},
-    {"user/channel": ["mydetlib_uninitialized.cpp"]}
+    {"user/channel -s build_type=Debug": ["mydetlib_uninitialized.cpp"]},
+    {"user/channel -s build_type=Debug": ["mydetlib_uninitialized.cpp"]}
 ]
 
 checks_uninitialized_release = [
-    {"user/channel": ["mydetlib_uninitialized.cpp"]},
-    {"user/channel": ["mydetlib_uninitialized.cpp"]}
+    {"user/channel -s build_type=Release": ["mydetlib_uninitialized.cpp"]},
+    {"user/channel -s build_type=Release": ["mydetlib_uninitialized.cpp"]}
 ]
 
 checks_initialized_debug = [
-    {"user/channel": ["mydetlib_initialized.cpp"]},
-    {"user/channel": ["mydetlib_initialized.cpp"]}
+    {"user/channel -s build_type=Debug": ["mydetlib_initialized.cpp"]},
+    {"user/channel -s build_type=Debug": ["mydetlib_initialized.cpp"]}
 ]
 
 checks_initialized_release = [
-    {"user/channel": ["mydetlib_initialized.cpp"]},
-    {"user/channel": ["mydetlib_initialized.cpp"]}
+    {"user/channel -s build_type=Release": ["mydetlib_initialized.cpp"]},
+    {"user/channel -s build_type=Release": ["mydetlib_initialized.cpp"]}
 ]
 
 variation_cases = [
+    Case("Empty library Release",
+         Check("../library", checks_nothing_release), False),
+    Case("Empty library Debug",
+         Check("../library", checks_nothing_debug), False),
+    Case("Empty library Release, 2 dirs",
+         Check("../library", checks_nothing_release_2_dirs), False),
+    Case("Empty library Debug,   2 dirs",
+         Check("../library", checks_nothing_debug_2_dirs), False),
+    Case("Library using __DATE__ macro",
+         Check("../library", checks_date), False),
+    Case("Library using __TIME__ macro",
+         Check("../library", checks_time), False),
+    Case("Library using __FILE__ macro",
+         Check("../library", checks_file), False),
+    Case("Library using __LINE__ macro",
+         Check("../library", checks_line), False),
+    Case("Empty library Release",
+         Check("../library", checks_nothing_release), True),
+    Case("Empty library Debug",
+         Check("../library", checks_nothing_debug), True),
+    Case("Empty library Release, 2 dirs",
+         Check("../library", checks_nothing_release_2_dirs), True),
+    Case("Empty library Debug,   2 dirs",
+         Check("../library", checks_nothing_debug_2_dirs), True),
+    Case("Library using __DATE__ macro",
+         Check("../library", checks_date), True),
+    Case("Library using __TIME__ macro",
+         Check("../library", checks_time), True),
+    Case("Library using __FILE__ macro",
+         Check("../library", checks_file), True),
+    Case("Library using __LINE__ macro",
+         Check("../library", checks_line), True),
     Case("Uninitialized data Debug",
          Check("../library", checks_uninitialized_debug), False),
     Case("Uninitialized data Release",
@@ -254,8 +286,6 @@ variation_cases = [
          Check("../library", checks_uninitialized_debug), False),
     Case("Initialized data Release",
          Check("../library", checks_uninitialized_release), False)
-    
-
 ]
 
 results = {}
