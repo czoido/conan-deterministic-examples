@@ -94,7 +94,7 @@ class LibPatcher(object):
                 self._output.info(
                     "patching timestamp at pos: {}".format(offset))
 
-            self._output.info("Patched file: {} with md5sum: {}".format(filename,md5sum(filename)))
+        self._output.info("Patched file: {} with md5sum: {}".format(filename,md5sum(filename)))
 
     def _patch_pe(self, filename):
         patch_tool_location = "C:/ducible/ducible.exe"
