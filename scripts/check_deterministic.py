@@ -115,49 +115,52 @@ def set_system_rand_time():
 
 
 class Check(object):
-    def __init__(self, folder, check_args):
-        self._check_args = check_args
-        self._folder = folder
+    def __init__(self, checks):
+        self._checks = checks
 
     def check_library_determinism(self, hook_state):
         activate_deterministic_hook(hook_state)
-        if not os.path.exists("../library/src"):
-            os.mkdir("../library/src")
-
         binary_checksums = {}
-        for check in self._check_args:
-            for ref, copy_files in check.items():
-                for cp_file in copy_files:
-                    shutil.copy("../cases/{}".format(cp_file),
-                                "../library/src/mydetlib.cpp")
+        for check in self._checks:
 
-                set_system_rand_time()
-                out = run(
-                    "cd {} && conan create . {}".format(self._folder, ref))
-                bin_files = get_binary_names(out)
-                hook_output(out)
-                for bin_file_path in bin_files:
-                    checksum = get_binary_checksum(bin_file_path)
-                    #revision = get_revision(out)
-                    bin_name = str(os.path.basename(bin_file_path))
-                    print(Fore.YELLOW + Style.BRIGHT + "Created binary: " + bin_file_path +
-                          " with checksum " + checksum + Fore.RESET + Style.RESET_ALL)
-                    if not bin_name in binary_checksums:
-                        binary_checksums[bin_name] = checksum
-                    elif checksum not in binary_checksums[bin_name]:
-                        print(Fore.RED + Style.BRIGHT +
-                              "binaries don't match!" + Fore.RESET + Style.RESET_ALL)
-                        return hook_state, False
-                    else:
-                        print(Fore.GREEN + Style.BRIGHT +
-                              "binaries match!" + Fore.RESET + Style.RESET_ALL)
-                        return hook_state, True
+            # copy new source files
+            for src, dst in check["sources"].items():
+                path = os.path.dirname(dst)
+                if not os.path.exists(path):
+                    os.mkdir(path)
+                shutil.copy(src, dst)
+
+            folder = check["folder"]
+            command = check["command"]
+
+            set_system_rand_time()
+
+            out = run(
+                "cd {} && conan create . {}".format(folder, command))
+            bin_files = get_binary_names(out)
+            hook_output(out)
+            for bin_file_path in bin_files:
+                checksum = get_binary_checksum(bin_file_path)
+                #revision = get_revision(out)
+                bin_name = str(os.path.basename(bin_file_path))
+                print(Fore.YELLOW + Style.BRIGHT + "Created binary: " + bin_file_path +
+                      " with checksum " + checksum + Fore.RESET + Style.RESET_ALL)
+                if not bin_name in binary_checksums:
+                    binary_checksums[bin_name] = checksum
+                elif checksum not in binary_checksums[bin_name]:
+                    print(Fore.RED + Style.BRIGHT +
+                          "binaries don't match!" + Fore.RESET + Style.RESET_ALL)
+                    return hook_state, False
+                else:
+                    print(Fore.GREEN + Style.BRIGHT +
+                          "binaries match!" + Fore.RESET + Style.RESET_ALL)
+                    return hook_state, True
 
 
 class Case(object):
     def __init__(self, name, checks, activate_hook):
         self.name = name
-        self._checks = checks
+        self._checks = Check(checks)
         self._activate_hook = activate_hook
 
     def launch_case(self):
@@ -186,107 +189,230 @@ def print_results(results):
 init()
 
 checks_nothing_release = [
-    {"user/channel -s build_type=Release": ["mydetlib_base.cpp"]},
-    {"user/channel -s build_type=Release": ["mydetlib_base.cpp"]}
+    {
+        "command": "user/channel -s build_type=Release",
+        "folder": "../library",
+        "sources":  {
+            "../cases/mydetlib_base.cpp": "../library/src/mydetlib.cpp"
+        }
+    },
+    {
+        "command": "user/channel -s build_type=Release",
+        "folder": "../library",
+        "sources":  {
+            "../cases/mydetlib_base.cpp": "../library/src/mydetlib.cpp"
+        }
+    }
 ]
 
 checks_nothing_debug = [
-    {"user/channel -s build_type=Debug": ["mydetlib_base.cpp"]},
-    {"user/channel -s build_type=Debug": ["mydetlib_base.cpp"]}
+    {
+        "command": "user/channel -s build_type=Debug",
+        "folder": "../library",
+        "sources":  {
+            "../cases/mydetlib_base.cpp": "../library/src/mydetlib.cpp"
+        }
+    },
+    {
+        "command": "user/channel -s build_type=Debug",
+        "folder": "../library",
+        "sources":  {
+            "../cases/mydetlib_base.cpp": "../library/src/mydetlib.cpp"
+        }
+    }
 ]
 
 checks_nothing_release_2_dirs = [
-    {"user/channel1 -s build_type=Release": ["mydetlib_base.cpp"]},
-    {"user/channel2 -s build_type=Release": ["mydetlib_base.cpp"]}
+    {
+        "command": "user/channel1 -s build_type=Release",
+        "folder": "../library",
+        "sources":  {
+            "../cases/mydetlib_base.cpp": "../library/src/mydetlib.cpp"
+        }
+    },
+    {
+        "command": "user/channel2 -s build_type=Release",
+        "folder": "../library",
+        "sources":  {
+            "../cases/mydetlib_base.cpp": "../library/src/mydetlib.cpp"
+        }
+    }
 ]
 
 checks_nothing_debug_2_dirs = [
-    {"user/channel1 -s build_type=Debug": ["mydetlib_base.cpp"]},
-    {"user/channel2 -s build_type=Debug": ["mydetlib_base.cpp"]}
+    {
+        "command": "user/channel1 -s build_type=Debug",
+        "folder": "../library",
+        "sources":  {
+            "../cases/mydetlib_base.cpp": "../library/src/mydetlib.cpp"
+        }
+    },
+    {
+        "command": "user/channel2 -s build_type=Debug",
+        "folder": "../library",
+        "sources":  {
+            "../cases/mydetlib_base.cpp": "../library/src/mydetlib.cpp"
+        }
+    }
 ]
 
 checks_date = [
-    {"user/channel": ["mydetlib_macros_date.cpp"]},
-    {"user/channel": ["mydetlib_macros_date.cpp"]}
+    {
+        "command": "user/channel",
+        "folder": "../library",
+        "sources":  {
+            "../cases/mydetlib_macros_date.cpp": "../library/src/mydetlib.cpp"
+        }
+    },
+    {
+        "command": "user/channel",
+        "folder": "../library",
+        "sources":  {
+            "../cases/mydetlib_macros_date.cpp": "../library/src/mydetlib.cpp"
+        }
+    }
 ]
 
 checks_time = [
-    {"user/channel": ["mydetlib_macros_time.cpp"]},
-    {"user/channel": ["mydetlib_macros_time.cpp"]}
+    {
+        "command": "user/channel",
+        "folder": "../library",
+        "sources":  {
+            "../cases/mydetlib_macros_time.cpp": "../library/src/mydetlib.cpp"
+        }
+    },
+    {
+        "command": "user/channel",
+        "folder": "../library",
+        "sources":  {
+            "../cases/mydetlib_macros_time.cpp": "../library/src/mydetlib.cpp"
+        }
+    }
 ]
 
 checks_file = [
-    {"user/channel1": ["mydetlib_macros_file.cpp"]},
-    {"user/channel2": ["mydetlib_macros_file.cpp"]}
+    {
+        "command": "user/channel",
+        "folder": "../library",
+        "sources":  {
+            "../cases/mydetlib_macros_file.cpp": "../library/src/mydetlib.cpp"
+        }
+    },
+    {
+        "command": "user/channel",
+        "folder": "../library",
+        "sources":  {
+            "../cases/mydetlib_macros_file.cpp": "../library/src/mydetlib.cpp"
+        }
+    }
 ]
 
 checks_line = [
-    {"user/channel": ["mydetlib_macros_line.cpp"]},
-    {"user/channel": ["mydetlib_macros_line.cpp"]}
+    {
+        "command": "user/channel",
+        "folder": "../library",
+        "sources":  {
+            "../cases/mydetlib_macros_line.cpp": "../library/src/mydetlib.cpp"
+        }
+    },
+    {
+        "command": "user/channel",
+        "folder": "../library",
+        "sources":  {
+            "../cases/mydetlib_macros_line.cpp": "../library/src/mydetlib.cpp"
+        }
+    }
 ]
 
 checks_uninitialized_debug = [
-    {"user/channel -s build_type=Debug": ["mydetlib_uninitialized.cpp"]},
-    {"user/channel -s build_type=Debug": ["mydetlib_uninitialized.cpp"]}
+    {
+        "command": "user/channel -s build_type=Debug",
+        "folder": "../library",
+        "sources":  {
+            "../cases/mydetlib_uninitialized.cpp": "../library/src/mydetlib.cpp"
+        }
+    },
+    {
+        "command": "user/channel -s build_type=Debug",
+        "folder": "../library",
+        "sources":  {
+            "../cases/mydetlib_uninitialized.cpp": "../library/src/mydetlib.cpp"
+        }
+    }
 ]
 
 checks_uninitialized_release = [
-    {"user/channel -s build_type=Release": ["mydetlib_uninitialized.cpp"]},
-    {"user/channel -s build_type=Release": ["mydetlib_uninitialized.cpp"]}
+    {
+        "command": "user/channel -s build_type=Release",
+        "folder": "../library",
+        "sources":  {
+            "../cases/mydetlib_uninitialized.cpp": "../library/src/mydetlib.cpp"
+        }
+    },
+    {
+        "command": "user/channel -s build_type=Release",
+        "folder": "../library",
+        "sources":  {
+            "../cases/mydetlib_uninitialized.cpp": "../library/src/mydetlib.cpp"
+        }
+    }
 ]
 
 checks_initialized_debug = [
-    {"user/channel -s build_type=Debug": ["mydetlib_initialized.cpp"]},
-    {"user/channel -s build_type=Debug": ["mydetlib_initialized.cpp"]}
+    {
+        "command": "user/channel -s build_type=Debug",
+        "folder": "../library",
+        "sources":  {
+            "../cases/mydetlib_initialized.cpp": "../library/src/mydetlib.cpp"
+        }
+    },
+    {
+        "command": "user/channel -s build_type=Debug",
+        "folder": "../library",
+        "sources":  {
+            "../cases/mydetlib_initialized.cpp": "../library/src/mydetlib.cpp"
+        }
+    }
 ]
 
 checks_initialized_release = [
-    {"user/channel -s build_type=Release": ["mydetlib_initialized.cpp"]},
-    {"user/channel -s build_type=Release": ["mydetlib_initialized.cpp"]}
+    {
+        "command": "user/channel -s build_type=Release",
+        "folder": "../library",
+        "sources":  {
+            "../cases/mydetlib_initialized.cpp": "../library/src/mydetlib.cpp"
+        }
+    },
+    {
+        "command": "user/channel -s build_type=Release",
+        "folder": "../library",
+        "sources":  {
+            "../cases/mydetlib_initialized.cpp": "../library/src/mydetlib.cpp"
+        }
+    }
 ]
 
 variation_cases = [
-    Case("Empty library Release",
-         Check("../library", checks_nothing_release), False),
-    Case("Empty library Debug",
-         Check("../library", checks_nothing_debug), False),
-    Case("Empty library Release, 2 dirs",
-         Check("../library", checks_nothing_release_2_dirs), False),
-    Case("Empty library Debug,   2 dirs",
-         Check("../library", checks_nothing_debug_2_dirs), False),
-    Case("Library using __DATE__ macro",
-         Check("../library", checks_date), False),
-    Case("Library using __TIME__ macro",
-         Check("../library", checks_time), False),
-    Case("Library using __FILE__ macro",
-         Check("../library", checks_file), False),
-    Case("Library using __LINE__ macro",
-         Check("../library", checks_line), False),
-    Case("Empty library Release",
-         Check("../library", checks_nothing_release), True),
-    Case("Empty library Debug",
-         Check("../library", checks_nothing_debug), True),
-    Case("Empty library Release, 2 dirs",
-         Check("../library", checks_nothing_release_2_dirs), True),
-    Case("Empty library Debug,   2 dirs",
-         Check("../library", checks_nothing_debug_2_dirs), True),
-    Case("Library using __DATE__ macro",
-         Check("../library", checks_date), True),
-    Case("Library using __TIME__ macro",
-         Check("../library", checks_time), True),
-    Case("Library using __FILE__ macro",
-         Check("../library", checks_file), True),
-    Case("Library using __LINE__ macro",
-         Check("../library", checks_line), True),
-    Case("Initialized data Debug",
-         Check("../library", checks_uninitialized_debug), False),
-    Case("Initialized data Release",
-         Check("../library", checks_uninitialized_release), False),
-    Case("Uninitialized data Debug",
-         Check("../library", checks_uninitialized_debug), False),
-    Case("Uninitialized data Release",
-         Check("../library", checks_uninitialized_release), False)
-]
+    Case("Empty library Release", checks_nothing_release, False),
+    Case("Empty library Debug", checks_nothing_debug, False),
+    Case("Empty library Release, 2 dirs", checks_nothing_release_2_dirs, False),
+    Case("Empty library Debug,   2 dirs", checks_nothing_debug_2_dirs, False),
+    Case("Library using __DATE__ macro", checks_date, False),
+    Case("Library using __TIME__ macro", checks_time, False),
+    Case("Library using __FILE__ macro", checks_file, False),
+    Case("Library using __LINE__ macro", checks_line, False),
+    Case("Empty library Release", checks_nothing_release, True),
+    Case("Empty library Debug", checks_nothing_debug, True),
+    Case("Empty library Release, 2 dirs", checks_nothing_release_2_dirs, True),
+    Case("Empty library Debug,   2 dirs", checks_nothing_debug_2_dirs, True),
+    Case("Library using __DATE__ macro", checks_date, True),
+    Case("Library using __TIME__ macro", checks_time, True),
+    Case("Library using __FILE__ macro", checks_file, True),
+    Case("Library using __LINE__ macro", checks_line, True),
+    Case("Initialized data Debug", checks_uninitialized_debug, False),
+    Case("Initialized data Release", checks_uninitialized_release, False),
+    Case("Uninitialized data Debug", checks_uninitialized_debug, False),
+    Case("Uninitialized data Release", checks_uninitialized_release, False)]
 
 results = {}
 
