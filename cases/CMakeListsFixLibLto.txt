@@ -1,0 +1,25 @@
+cmake_minimum_required(VERSION 3.0)
+project(DeterministicHello)
+
+SET(CMAKE_CXX_STANDARD 11)
+SET(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup()
+
+add_definitions("-flto")
+
+set(LIB_SOURCES
+    ./src/mydetlib.cpp)
+
+foreach(_file ${LIB_SOURCES})
+    file(SHA1 ${_file} checksum)
+    string(SUBSTRING ${checksum} 0 8 checksum)
+    set_property(SOURCE ${_file} APPEND_STRING PROPERTY COMPILE_FLAGS "-frandom-seed=0x${checksum}")
+endforeach()
+
+add_library(mydetlib)
+
+if (BUILD_SHARED_LIBS)
+    target_compile_definitions(mydetlib PUBLIC EXPORTDLL)
+endif()

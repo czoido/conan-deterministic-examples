@@ -122,7 +122,6 @@ class Check(object):
         activate_deterministic_hook(hook_state)
         binary_checksums = {}
         for check in self._checks:
-
             # copy new source files
             for src, dst in check["sources"].items():
                 path = os.path.dirname(dst)
@@ -412,6 +411,26 @@ checks_lto_flags = [
     }
 ]
 
+checks_random_seed_fix_lto_flags = [
+    {
+        "command": "user/channel -s build_type=Release",
+        "folder": "../library",
+        "sources":  {
+            "../cases/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
+            "../cases/CMakeLists.txt": "../library/CMakeLists.txt"
+        }
+    },
+    {
+        "command": "user/channel -s build_type=Release",
+        "folder": "../library",
+        "sources":  {
+            "../cases/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
+            "../cases/CMakeLists.txt": "../library/CMakeLists.txt"
+        }
+    }
+]
+
+
 variation_cases = [
     Case("Empty library Release", checks_nothing_release, False),
     Case("Empty library Debug", checks_nothing_debug, False),
@@ -434,6 +453,7 @@ variation_cases = [
     Case("Uninitialized data Debug", checks_uninitialized_debug, False),
     Case("Uninitialized data Release", checks_uninitialized_release, False),
     Case("Use LTO flags", checks_lto_flags, False),
+    Case("Empty library Fix LTO", checks_random_seed_fix_lto_flags, False)
 ]
 
 results = {}

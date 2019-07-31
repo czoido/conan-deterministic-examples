@@ -7,7 +7,7 @@ SET(CMAKE_CXX_STANDARD_REQUIRED ON)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
-add_library(mydetlib ./src/mydetlib.cpp ./include/mydetlib.hpp)
+add_library(mydetlib ./src/mydetlib.cpp)
 
 if (BUILD_SHARED_LIBS)
     target_compile_definitions(mydetlib PUBLIC EXPORTDLL)
