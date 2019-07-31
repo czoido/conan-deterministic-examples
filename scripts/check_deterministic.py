@@ -145,16 +145,21 @@ class Check(object):
                 print(Fore.YELLOW + Style.BRIGHT + "Created binary: " + bin_file_path +
                       " with checksum " + checksum + Fore.RESET + Style.RESET_ALL)
                 if not bin_name in binary_checksums:
-                    binary_checksums[bin_name] = checksum
-                elif checksum not in binary_checksums[bin_name]:
+                    binary_checksums[bin_name] = {"checksum": checksum, "fail": False}
+                elif checksum not in binary_checksums[bin_name]["checksum"]:
                     print(Fore.RED + Style.BRIGHT +
                           "binaries don't match!" + Fore.RESET + Style.RESET_ALL)
-                    return hook_state, False
+                    binary_checksums[bin_name]["fail"]=False
                 else:
                     print(Fore.GREEN + Style.BRIGHT +
                           "binaries match!" + Fore.RESET + Style.RESET_ALL)
-                    return hook_state, True
+                    binary_checksums[bin_name]["fail"]=True
 
+        for _,data in binary_checksums.items():
+            if data["fail"]:
+                return hook_state, False
+            else:
+                return hook_state, True
 
 class Case(object):
     def __init__(self, name, checks, activate_hook):
@@ -249,6 +254,23 @@ checks_nothing_debug_2_dirs = [
     },
     {
         "command": "user/channel2 -s build_type=Debug",
+        "folder": "../library",
+        "sources":  {
+            "../cases/mydetlib_base.cpp": "../library/src/mydetlib.cpp"
+        }
+    }
+]
+
+checks_nothing_debug_2_dirs_shared = [
+    {
+        "command": "user/channel1 -s build_type=Debug -o shared=True",
+        "folder": "../library",
+        "sources":  {
+            "../cases/mydetlib_base.cpp": "../library/src/mydetlib.cpp"
+        }
+    },
+    {
+        "command": "user/channel2 -s build_type=Debug -o shared=True",
         "folder": "../library",
         "sources":  {
             "../cases/mydetlib_base.cpp": "../library/src/mydetlib.cpp"
@@ -435,7 +457,8 @@ variation_cases = [
     Case("Empty library Release", checks_nothing_release, False),
     Case("Empty library Debug", checks_nothing_debug, False),
     Case("Empty library Release, 2 dirs", checks_nothing_release_2_dirs, False),
-    Case("Empty library Debug,   2 dirs", checks_nothing_debug_2_dirs, False),
+    Case("Empty library Debug, 2 dirs", checks_nothing_debug_2_dirs, False),
+    Case("Empty library Debug, 2 dirs shared", checks_nothing_debug_2_dirs_shared, False),
     Case("Library using __DATE__ macro", checks_date, False),
     Case("Library using __TIME__ macro", checks_time, False),
     Case("Library using __FILE__ macro", checks_file, False),
