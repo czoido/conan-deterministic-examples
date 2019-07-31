@@ -154,7 +154,7 @@ class Check(object):
                             self.result_deterministic_hook_on = True
                         else:
                             self.result_deterministic_hook_off = True
-                            
+
                         print(Fore.GREEN + Style.BRIGHT +
                               "binaries match!" + Fore.RESET + Style.RESET_ALL)
 
@@ -164,6 +164,7 @@ class Case(object):
         self._name = name
         self._checks = checks
         self._activate_hook = activate_hook
+        self._header_justify = 10
 
     def launch_case(self):
         print("\n")
@@ -171,17 +172,18 @@ class Case(object):
               "CASE: {}".format(self._name) + Fore.RESET)
         self._checks.check_library_determinism(self._activate_hook)
 
+    # def print_result_header(self):
+    #    print(Fore.LIGHTMAGENTA_EX +
+    #          "".ljust(40) + "HOOK OFF".ljust(self._header_justify) + "HOOK ON".ljust(self._header_justify) + Fore.RESET)
+
     def print_result(self):
-        left_justify = 10
         result_msg = {
-            None: Fore.WHITE + "UNKNOWN".ljust(left_justify),
-            False: Fore.RED + "FAIL".ljust(left_justify),
-            True: Fore.GREEN + "SUCCESS".ljust(left_justify)
+            None: Fore.WHITE + "UNKNOWN".ljust(self._header_justify),
+            False: Fore.RED + "FAIL".ljust(self._header_justify),
+            True: Fore.GREEN + "SUCCESS".ljust(self._header_justify)
         }
         msg_hook_on = result_msg[self._checks.result_deterministic_hook_on]
         msg_hook_off = result_msg[self._checks.result_deterministic_hook_off]
-        print(Fore.LIGHTMAGENTA_EX +
-              "".ljust(40) + "HOOK OFF".ljust(left_justify) + "HOOK ON".ljust(left_justify) + Fore.RESET)
         print(Fore.LIGHTMAGENTA_EX +
               "CASE: {} ".format(self._name).ljust(40) + msg_hook_off + msg_hook_on + Fore.RESET)
 
@@ -229,21 +231,34 @@ checks_line = [
 ]
 
 variation_cases = [
-    Case("Empty library Release", Check("../library", checks_nothing_release), False),
+    Case("Empty library Release", Check(
+        "../library", checks_nothing_release), False),
     Case("Empty library Debug", Check("../library", checks_nothing_debug), False),
-    Case("Empty library Release, 2 dirs", Check("../library", checks_nothing_release_2_dirs), False),
-    Case("Empty library Debug,   2 dirs", Check("../library", checks_nothing_debug_2_dirs), False),
-    Case("Library using __DATE__ macro", Check("../library", checks_date), False),
-    Case("Library using __TIME__ macro", Check("../library", checks_time), False),
-    Case("Library using __FILE__ macro", Check("../library", checks_file), False),
-    Case("Library using __LINE__ macro", Check("../library", checks_line), False),
-    Case("Empty library Release", Check("../library", checks_nothing_release), True),
+    Case("Empty library Release, 2 dirs", Check(
+        "../library", checks_nothing_release_2_dirs), False),
+    Case("Empty library Debug,   2 dirs", Check(
+        "../library", checks_nothing_debug_2_dirs), False),
+    Case("Library using __DATE__ macro", Check(
+        "../library", checks_date), False),
+    Case("Library using __TIME__ macro", Check(
+        "../library", checks_time), False),
+    Case("Library using __FILE__ macro", Check(
+        "../library", checks_file), False),
+    Case("Library using __LINE__ macro", Check(
+        "../library", checks_line), False),
+    Case("Empty library Release", Check(
+        "../library", checks_nothing_release), True),
     Case("Empty library Debug", Check("../library", checks_nothing_debug), True),
-    Case("Empty library Release, 2 dirs", Check("../library", checks_nothing_release_2_dirs), True),
-    Case("Empty library Debug,   2 dirs", Check("../library", checks_nothing_debug_2_dirs), True),
-    Case("Library using __DATE__ macro", Check("../library", checks_date), True),
-    Case("Library using __TIME__ macro", Check("../library", checks_time), True),
-    Case("Library using __FILE__ macro", Check("../library", checks_file), True),
+    Case("Empty library Release, 2 dirs", Check(
+        "../library", checks_nothing_release_2_dirs), True),
+    Case("Empty library Debug,   2 dirs", Check(
+        "../library", checks_nothing_debug_2_dirs), True),
+    Case("Library using __DATE__ macro", Check(
+        "../library", checks_date), True),
+    Case("Library using __TIME__ macro", Check(
+        "../library", checks_time), True),
+    Case("Library using __FILE__ macro", Check(
+        "../library", checks_file), True),
     Case("Library using __LINE__ macro", Check("../library", checks_line), True)
 ]
 
