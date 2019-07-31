@@ -185,6 +185,16 @@ checks_nothing_debug = [
     {"user/channel -s build_type=Debug": ["mydetlib_base.cpp"]}
 ]
 
+checks_nothing_release_2_dirs = [
+    {"user/channel1 -s build_type=Release": ["mydetlib_base.cpp"]},
+    {"user/channel2 -s build_type=Release": ["mydetlib_base.cpp"]}
+]
+
+checks_nothing_debug_2_dirs = [
+    {"user/channel1 -s build_type=Debug": ["mydetlib_base.cpp"]},
+    {"user/channel2 -s build_type=Debug": ["mydetlib_base.cpp"]}
+]
+
 checks_date = [
     {"user/channel": ["mydetlib_macros_date.cpp"]},
     {"user/channel": ["mydetlib_macros_date.cpp"]}
@@ -206,12 +216,14 @@ checks_line = [
 ]
 
 variation_cases = [
-    Case("Empty library Release       ", Check("../library", checks_nothing_release), True),
-    Case("Empty library Debug         ", Check("../library", checks_nothing_debug), True),
-    Case("Library using __DATE__ macro", Check("../library", checks_date), True),
-    Case("Library using __TIME__ macro", Check("../library", checks_time), True),
-    Case("Library using __FILE__ macro", Check("../library", checks_file), True),
-    Case("Library using __LINE__ macro", Check("../library", checks_line), True)
+    Case("Empty library Release        ", Check("../library", checks_nothing_release), True),
+    Case("Empty library Debug          ", Check("../library", checks_nothing_debug), True),
+    Case("Empty library Release, 2 dirs", Check("../library", checks_nothing_release_2_dirs), True),
+    Case("Empty library Debug,   2 dirs", Check("../library", checks_nothing_debug_2_dirs), True),
+    Case("Library using __DATE__ macro ", Check("../library", checks_date), True),
+    Case("Library using __TIME__ macro ", Check("../library", checks_time), True),
+    Case("Library using __FILE__ macro ", Check("../library", checks_file), True),
+    Case("Library using __LINE__ macro ", Check("../library", checks_line), True)
 ]
 
 for case in variation_cases:
