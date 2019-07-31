@@ -417,7 +417,7 @@ checks_random_seed_fix_lto_flags = [
         "folder": "../library",
         "sources":  {
             "../cases/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
-            "../cases/CMakeLists.txt": "../library/CMakeLists.txt"
+            "../cases/CMakeListsFixLibLto.txt": "../library/CMakeLists.txt"
         }
     },
     {
@@ -425,7 +425,7 @@ checks_random_seed_fix_lto_flags = [
         "folder": "../library",
         "sources":  {
             "../cases/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
-            "../cases/CMakeLists.txt": "../library/CMakeLists.txt"
+            "../cases/CMakeListsFixLibLto.txt": "../library/CMakeLists.txt"
         }
     }
 ]
