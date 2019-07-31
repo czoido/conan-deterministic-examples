@@ -12,6 +12,7 @@ struct example_structure {
 void MyLib::PrintMessage(const std::string & message)
 {
     struct example_structure my_structure = {0};
+    my_structure.field1 = 123456;
 	std::cout << message << std::endl;
 }
 
