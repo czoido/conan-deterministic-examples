@@ -22,16 +22,28 @@ osx: &osx
    install:
      - chmod +x .ci/travis/install.sh
      - .ci/travis/install.sh
+     - mkdir $HOME/.conan/hooks
+     - cp hook/deterministic-build.py $HOME/.conan/hooks/deterministic-build.py
+     - brew install md5sha1sum 
    before_script:
      - eval "$(pyenv init -)"
      - pyenv activate conan
+     - conan config set hooks.deterministic-build
+     - conan config set general.revisions_enabled=True
+     - cat $HOME/.conan/conan.conf
+     - ls $HOME/.conan/hooks
 
 matrix:
    include:
       - stage: Linux builds
         sudo: true
-        name: Getting started
+        name: Deterministic build
         <<: *linux
+        env: FOLDER=scripts
+      - stage: Macos builds
+        sudo: true
+        name: Deterministic build
+        <<: *osx
         env: FOLDER=scripts
 
 script:

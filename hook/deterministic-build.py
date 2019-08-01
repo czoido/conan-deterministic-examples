@@ -23,20 +23,27 @@ class LibPatcher(object):
         self._os = self._conanfile.settings.get_safe(
             'os') or self._conanfile.settings.get_safe('os_build')
         self._compiler = self._conanfile.settings.get_safe('compiler')
-        self._output.info('Conan binary patcher plug-in for Windows')
 
     def set_environment(self):
-        if self._os == "Linux":
+        if self._os == "Linux" or self._os == "Macos":
             # set SOURCE_DATE_EPOC to arbitraty value to test functionality
             # should be set to last modification of sources with something like:
             # SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)
             # 1564483496
             timestamp = "1564483496"
-            self._old_source_date_epoch = os.environ.get("SOURCE_DATE_EPOCH")
+            if self._os == "Linux":
+                self._old_source_date_epoch = os.environ.get("SOURCE_DATE_EPOCH")
+
             try:
-                os.environ["SOURCE_DATE_EPOCH"] = timestamp
-                self._output.info(
-                    "set SOURCE_DATE_EPOCH: {}".format(timestamp))
+                if self._os == "Linux":
+                    os.environ["SOURCE_DATE_EPOCH"] = timestamp
+                    self._output.info(
+                        "set SOURCE_DATE_EPOCH: {}".format(timestamp))
+                elif self._os == "Macos":
+                    os.environ["ZERO_AR_DATE"] = "1"
+                    self._output.info(
+                        "set ZERO_AR_DATE: {}".format(timestamp))
+
             except:
                 pass
 
@@ -46,6 +53,8 @@ class LibPatcher(object):
                 del os.environ["SOURCE_DATE_EPOCH"]
             else:
                 os.environ["SOURCE_DATE_EPOCH"] = self._old_source_date_epoch
+        elif self._os == "Macos":
+            del os.environ["ZERO_AR_DATE"]
 
     def patch(self):
         if self._os == "Windows":
