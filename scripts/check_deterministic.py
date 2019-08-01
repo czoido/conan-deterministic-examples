@@ -33,6 +33,13 @@ def get_revision(console_txt):
     prev = console_txt.find(search_str)
     return console_txt[prev+len(search_str)+1:-6]
 
+def get_compiler(console_txt):
+    for line in console_txt.splitlines():
+        line = str(line)
+        if "compiler=" in line:
+            comp_pos = line.find("compiler=")
+            return line[comp_pos+len("compiler="):-1]
+    return ""
 
 def hook_output(console_txt):
     for line in console_txt.splitlines():
@@ -108,6 +115,7 @@ def set_system_rand_time():
     elif os.environ.get('APPVEYOR') == 'True' and sys.platform == 'win32':
         _win_set_time(time_tuple)
 
+compiler = ""
 
 class Check(object):
     def __init__(self, checks):
@@ -131,6 +139,8 @@ class Check(object):
 
             out = run(
                 "cd {} && conan create . {}".format(folder, command))
+            # have to change
+            compiler = get_compiler(out)
             bin_files = get_binary_names(out)
             hook_output(out)
             for bin_file_path in bin_files:
@@ -491,19 +501,23 @@ variation_cases = [
     Case("Library using __FILE__ macro", checks_file, True),
     Case("Library using __FILE__ macro, 2 dirs", checks_file_2_dirs, True),
     #Case("Library using __LINE__ macro", checks_line, True),
-    Case("Initialized data Debug", checks_uninitialized_debug, False),
-    Case("Initialized data Release", checks_uninitialized_release, False),
-    Case("Uninitialized data Debug", checks_uninitialized_debug, False),
-    Case("Uninitialized data Release", checks_uninitialized_release, False),
-    Case("Initialized data Debug", checks_uninitialized_debug, True),
-    Case("Initialized data Release", checks_uninitialized_release, True),
-    Case("Uninitialized data Debug", checks_uninitialized_debug, True),
-    Case("Uninitialized data Release", checks_uninitialized_release, True),
-    Case("gcc: Use LTO flags", checks_lto_flags, False),
-    Case("gcc: Empty library Fix LTO", checks_random_seed_fix_lto_flags, False),
-    Case("gcc: Use LTO flags", checks_lto_flags, True),
-    Case("gcc: Empty library Fix LTO", checks_random_seed_fix_lto_flags, True)
+    #Case("Initialized data Debug", checks_uninitialized_debug, False),
+    #Case("Initialized data Release", checks_uninitialized_release, False),
+    #Case("Uninitialized data Debug", checks_uninitialized_debug, False),
+    #Case("Uninitialized data Release", checks_uninitialized_release, False),
+    #Case("Initialized data Debug", checks_uninitialized_debug, True),
+    #Case("Initialized data Release", checks_uninitialized_release, True),
+    #Case("Uninitialized data Debug", checks_uninitialized_debug, True),
+    #Case("Uninitialized data Release", checks_uninitialized_release, True),
 ]
+
+if "gcc" in compiler:
+    variation_cases.extend([
+        Case("gcc: Use LTO flags", checks_lto_flags, False),
+        Case("gcc: Empty library Fix LTO", checks_random_seed_fix_lto_flags, False),
+        Case("gcc: Use LTO flags", checks_lto_flags, True),
+        Case("gcc: Empty library Fix LTO", checks_random_seed_fix_lto_flags, True)
+    ])
 
 results = {}
 
