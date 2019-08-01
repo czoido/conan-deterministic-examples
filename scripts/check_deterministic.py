@@ -328,6 +328,24 @@ checks_file = [
     }
 ]
 
+checks_file_2_dirs = [
+    {
+        "command": "user/channel",
+        "folder": "../library",
+        "sources":  {
+            "../cases/mydetlib_macros_file.cpp": "../library/src/mydetlib.cpp"
+        }
+    },
+    {
+        "command": "user/channel",
+        "folder": "../library",
+        "sources":  {
+            "../cases/mydetlib_macros_file.cpp": "../library/src/mydetlib.cpp"
+        }
+    }
+]
+
+
 checks_line = [
     {
         "command": "user/channel",
@@ -466,10 +484,12 @@ variation_cases = [
     Case("Library using __DATE__ macro", checks_date, False),
     Case("Library using __TIME__ macro", checks_time, False),
     Case("Library using __FILE__ macro", checks_file, False),
+    Case("Library using __FILE__ macro, 2 dirs", checks_file_2_dirs, False),
     #Case("Library using __LINE__ macro", checks_line, False),
     Case("Library using __DATE__ macro", checks_date, True),
     Case("Library using __TIME__ macro", checks_time, True),
     Case("Library using __FILE__ macro", checks_file, True),
+    Case("Library using __FILE__ macro, 2 dirs", checks_file_2_dirs, True),
     #Case("Library using __LINE__ macro", checks_line, True),
     Case("Initialized data Debug", checks_uninitialized_debug, False),
     Case("Initialized data Release", checks_uninitialized_release, False),
