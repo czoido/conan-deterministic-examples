@@ -206,7 +206,7 @@ checks_nothing_release = [
         "folder": "../library",
         "sources":  {
             "../cases/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
-            "../cases/CMakeListsLib.txt": "../library/CMakeLists.txt"
+            "../cases/CMakeListsDefault.txt": "../library/CMakeLists.txt"
         }
     },
     {
@@ -214,7 +214,7 @@ checks_nothing_release = [
         "folder": "../library",
         "sources":  {
             "../cases/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
-            "../cases/CMakeListsLib.txt": "../library/CMakeLists.txt"
+            "../cases/CMakeListsDefault.txt": "../library/CMakeLists.txt"
         }
     }
 ]
@@ -447,7 +447,7 @@ checks_lto_flags = [
         "folder": "../library",
         "sources":  {
             "../cases/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
-            "../cases/CMakeListsLibLto.txt": "../library/CMakeLists.txt"
+            "../cases/CMakeListsLto.txt": "../library/CMakeLists.txt"
         }
     },
     {
@@ -455,7 +455,7 @@ checks_lto_flags = [
         "folder": "../library",
         "sources":  {
             "../cases/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
-            "../cases/CMakeListsLibLto.txt": "../library/CMakeLists.txt"
+            "../cases/CMakeListsLto.txt": "../library/CMakeLists.txt"
         }
     }
 ]
@@ -466,7 +466,7 @@ checks_random_seed_fix_lto_flags = [
         "folder": "../library",
         "sources":  {
             "../cases/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
-            "../cases/CMakeListsFixLibLto.txt": "../library/CMakeLists.txt"
+            "../cases/CMakeListsFixLto.txt": "../library/CMakeLists.txt"
         }
     },
     {
@@ -474,7 +474,7 @@ checks_random_seed_fix_lto_flags = [
         "folder": "../library",
         "sources":  {
             "../cases/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
-            "../cases/CMakeListsFixLibLto.txt": "../library/CMakeLists.txt"
+            "../cases/CMakeListsFixLto.txt": "../library/CMakeLists.txt"
         }
     }
 ]
