@@ -36,10 +36,17 @@ binaries
 
 There are many different reasons for that your builds can end being non-deterministic. Reasons will vary
 between different operating systems and compilers. Not all compilers or linkers have the option to introduce
-certain flags to fix the sources of indeterminism. In `gcc` and `clang` there are some options or environment
-variables that can be set to minimize the indeterminisitic but using `msvc` you will probably need to patch
-the build binaries as there are no options available to prevent the propagation of certain information to the
-binaries.
+certain flags to fix the sources of indeterminism. In `gcc` and `clang` for example there are some options or
+environment variables that can to minimize the indeterminisitic behaviour but using `msvc` you will probably
+need to patch the builtbinaries as there are no options available to prevent the propagation of certain
+information to the binaries.
+
+This repository contains a python script called `check_deterministic.py` which produces binaries affected by
+different causes of indeterminism and tries to fix them two ways:
+- Applying a Conan hook. This hook can be used to setup environment variables in the `pre_build` step and
+  patch binaries in `post_build`. The intention of the annexed hook named `deterministic-build.py` is to show
+  the tools that can be used to produce deterministic builds but not to enter in much detail in how to do it. 
+- Modifying compiler/linker flags in the `CMakeLists.txt`.
 
 ## Timestamps introduced by the compiler / linker
 
