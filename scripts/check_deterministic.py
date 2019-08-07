@@ -195,7 +195,7 @@ def print_results(results):
         msg_hook_on = result_msg[result[True]]
         msg_hook_off = result_msg[result[False]]
         print(Fore.LIGHTMAGENTA_EX +
-              "CASE: {} ".format(case_name).ljust(header_justify_l) + msg_hook_off + msg_hook_on + Fore.RESET)
+              "{} ".format(case_name).ljust(header_justify_l) + msg_hook_off + msg_hook_on + Fore.RESET)
 
 
 init()
@@ -266,6 +266,25 @@ checks_nothing_debug_2_dirs = [
         "folder": "../library",
         "sources":  {
             "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp"
+        }
+    }
+]
+
+checks_nothing_debug_2_dirs_fix = [
+    {
+        "command": "user/channel1 -s build_type=Debug",
+        "folder": "../library",
+        "sources":  {
+            "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
+            "../cases/lib/CMakeListsFixFileDebugDirs.txt": "../library/CMakeLists.txt"
+        }
+    },
+    {
+        "command": "user/channel2 -s build_type=Debug",
+        "folder": "../library",
+        "sources":  {
+            "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
+            "../cases/lib/CMakeListsFixFileDebugDirs.txt": "../library/CMakeLists.txt"
         }
     }
 ]
@@ -498,29 +517,29 @@ checks_consumer_empty = [
     }
 ]
 
-
 variation_cases = [
-    Case("Empty library Release", checks_nothing_release, False),
+    Case("Empty lib Release", checks_nothing_release, False),
     Case("Consumer Release", checks_consumer_empty, False),
-    Case("Empty library Release", checks_nothing_release, True),
-    Case("Empty library Debug", checks_nothing_debug, False),
-    Case("Empty library Debug", checks_nothing_debug, True),
-    Case("Empty library Release, 2 dirs", checks_nothing_release_2_dirs, False),
-    Case("Empty library Debug, 2 dirs", checks_nothing_debug_2_dirs, False),
-    Case("Empty library Release, 2 dirs", checks_nothing_release_2_dirs, True),
-    Case("Empty library Debug, 2 dirs", checks_nothing_debug_2_dirs, True),
-    Case("Empty library Debug, 2 dirs shared",checks_nothing_debug_2_dirs_shared, False),
-    #Case("Empty library Debug, 2 dirs shared",checks_nothing_debug_2_dirs_shared, True),
-    Case("Library using __DATE__ macro", checks_date, False),
-    Case("Library using __TIME__ macro", checks_time, False),
-    Case("Library using __FILE__ macro", checks_file, False),
-    Case("Library using __FILE__ macro, 2 dirs", checks_file_2_dirs, False),
-    #Case("Library using __LINE__ macro", checks_line, False),
-    Case("Library using __DATE__ macro", checks_date, True),
-    Case("Library using __TIME__ macro", checks_time, True),
-    Case("Library using __FILE__ macro", checks_file, True),
-    Case("Library using __FILE__ macro, 2 dirs", checks_file_2_dirs, True),
-    #Case("Library using __LINE__ macro", checks_line, True),
+    Case("Empty lib Release", checks_nothing_release, True),
+    Case("Empty lib Debug", checks_nothing_debug, False),
+    Case("Empty lib Debug", checks_nothing_debug, True),
+    Case("Empty lib Release, 2 dirs", checks_nothing_release_2_dirs, False),
+    Case("Empty lib Debug, 2 dirs", checks_nothing_debug_2_dirs, False),
+    Case("Empty lib Release, 2 dirs", checks_nothing_release_2_dirs, True),
+    Case("Empty lib Debug, 2 dirs", checks_nothing_debug_2_dirs, True),
+    Case("Empty lib Debug, 2 dirs with Fix", checks_nothing_debug_2_dirs_fix, True),    
+    Case("Empty lib Debug, 2 dirs shared",checks_nothing_debug_2_dirs_shared, False),
+    #Case("Empty lib Debug, 2 dirs shared",checks_nothing_debug_2_dirs_shared, True),
+    Case("Lib using __DATE__ macro", checks_date, False),
+    Case("Lib using __TIME__ macro", checks_time, False),
+    Case("Lib using __FILE__ macro", checks_file, False),
+    Case("Lib using __FILE__ macro, 2 dirs", checks_file_2_dirs, False),
+    #Case("Lib using __LINE__ macro", checks_line, False),
+    Case("Lib using __DATE__ macro", checks_date, True),
+    Case("Lib using __TIME__ macro", checks_time, True),
+    Case("Lib using __FILE__ macro", checks_file, True),
+    Case("Lib using __FILE__ macro, 2 dirs", checks_file_2_dirs, True),
+    #Case("Lib using __LINE__ macro", checks_line, True),
     #Case("Initialized data Debug", checks_uninitialized_debug, False),
     #Case("Initialized data Release", checks_uninitialized_release, False),
     #Case("Uninitialized data Debug", checks_uninitialized_debug, False),
@@ -534,9 +553,9 @@ variation_cases = [
 if "gcc" in compiler:
     variation_cases.extend([
         Case("gcc: Use LTO flags", checks_lto_flags, False),
-        Case("gcc: Empty library Fix LTO", checks_random_seed_fix_lto_flags, False),
+        Case("gcc: Empty lib Fix LTO", checks_random_seed_fix_lto_flags, False),
         Case("gcc: Use LTO flags", checks_lto_flags, True),
-        Case("gcc: Empty library Fix LTO", checks_random_seed_fix_lto_flags, True)
+        Case("gcc: Empty lib Fix LTO", checks_random_seed_fix_lto_flags, True)
     ])
 
 results = {}
