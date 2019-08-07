@@ -340,14 +340,14 @@ checks_file = [
 
 checks_file_2_dirs = [
     {
-        "command": "user/channel",
+        "command": "user/channel1",
         "folder": "../library",
         "sources":  {
             "../cases/mydetlib_macros_file.cpp": "../library/src/mydetlib.cpp"
         }
     },
     {
-        "command": "user/channel",
+        "command": "user/channel2",
         "folder": "../library",
         "sources":  {
             "../cases/mydetlib_macros_file.cpp": "../library/src/mydetlib.cpp"
