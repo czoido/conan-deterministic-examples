@@ -28,6 +28,10 @@ The second case could be a concern if you are using Conan to manage your package
 
 Because of the use of macros like `__DATE__` or `__TIME__` or because of the definition of the file format (like `PE` in Windows and `Mach-O` in MacOs)
 
+Windows: patch binaries
+MacOs: option to set `ZERO_AR_DATE`
+Linux: set `SOURCE_DATE_EPOCH`
+
 ## Build folder information propagated to binaries
 
 ## Randomness created by the compiler
@@ -38,7 +42,7 @@ Like using the `-flto` flag in gcc
 
 ## Value initialization
 
-
+...
 
 ### References
 
