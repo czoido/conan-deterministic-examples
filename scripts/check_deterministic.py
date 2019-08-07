@@ -118,8 +118,10 @@ def set_system_rand_time():
 compiler = ""
 
 class Check(object):
-    def __init__(self, checks):
+    def __init__(self, checks, build_type, shared):
         self._checks = checks
+        self._build_type = build_type
+        self._shared = shared
 
     def check_library_determinism(self, hook_state):
         activate_deterministic_hook(hook_state)
@@ -133,12 +135,19 @@ class Check(object):
                 shutil.copy(src, dst)
 
             folder = check["folder"]
-            command = check["command"]
+
+            if "user_channel" in check:
+               user_channel = check["user_channel"]
+            else:
+                user_channel = "user/channel"
+
+            user_channel = user_channel + " -s build_type={}".format(self._build_type)
+            if self._shared:
+                user_channel = user_channel + "-o shared=True"
 
             set_system_rand_time()
-
             out = run(
-                "cd {} && conan create . {}".format(folder, command))
+                "cd {} && conan create . {}".format(folder, user_channel))
             # have to change
             compiler = get_compiler(out)
             bin_files = get_binary_names(out)
@@ -169,10 +178,12 @@ class Check(object):
 
 
 class Case(object):
-    def __init__(self, name, checks, activate_hook):
+    def __init__(self, name, checks, activate_hook=False, build_type="Release", shared=False):
         self.name = name
-        self._checks = Check(checks)
         self._activate_hook = activate_hook
+        self._build_type = build_type
+        self._shared = shared
+        self._checks = Check(checks, build_type=self._build_type, shared=self._shared)
 
     def launch_case(self):
         print("\n")
@@ -202,7 +213,6 @@ init()
 
 checks_nothing_release = [
     {
-        "command": "user/channel -s build_type=Release",
         "folder": "../library",
         "sources":  {
             "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
@@ -210,7 +220,6 @@ checks_nothing_release = [
         }
     },
     {
-        "command": "user/channel -s build_type=Release",
         "folder": "../library",
         "sources":  {
             "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
@@ -221,14 +230,12 @@ checks_nothing_release = [
 
 checks_nothing_debug = [
     {
-        "command": "user/channel -s build_type=Debug",
         "folder": "../library",
         "sources":  {
             "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp"
         }
     },
     {
-        "command": "user/channel -s build_type=Debug",
         "folder": "../library",
         "sources":  {
             "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp"
@@ -238,14 +245,14 @@ checks_nothing_debug = [
 
 checks_nothing_release_2_dirs = [
     {
-        "command": "user/channel1 -s build_type=Release",
+        "user_channel": "user/channel1",
         "folder": "../library",
         "sources":  {
             "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp"
         }
     },
     {
-        "command": "user/channel2 -s build_type=Release",
+        "user_channel": "user/channel2",
         "folder": "../library",
         "sources":  {
             "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp"
@@ -255,14 +262,14 @@ checks_nothing_release_2_dirs = [
 
 checks_nothing_debug_2_dirs = [
     {
-        "command": "user/channel1 -s build_type=Debug",
+        "user_channel": "user/channel1",
         "folder": "../library",
         "sources":  {
             "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp"
         }
     },
     {
-        "command": "user/channel2 -s build_type=Debug",
+        "user_channel": "user/channel2",
         "folder": "../library",
         "sources":  {
             "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp"
@@ -270,9 +277,9 @@ checks_nothing_debug_2_dirs = [
     }
 ]
 
-checks_nothing_debug_2_dirs_fix = [
+checks_nothing_debug_prefix_map = [
     {
-        "command": "user/channel1 -s build_type=Debug",
+        "user_channel": "user/channel1",
         "folder": "../library",
         "sources":  {
             "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
@@ -280,25 +287,63 @@ checks_nothing_debug_2_dirs_fix = [
         }
     },
     {
-        "command": "user/channel2 -s build_type=Debug",
+        "user_channel": "user/channel2",
         "folder": "../library",
         "sources":  {
             "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
             "../cases/lib/CMakeListsDebugPrefix.txt": "../library/CMakeLists.txt"
+        }
+    }
+]
+
+checks_nothing_macro_prefix_map = [
+    {
+        "user_channel": "user/channel1",
+        "folder": "../library",
+        "sources":  {
+            "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
+            "../cases/lib/CMakeListsMacroPrefix.txt": "../library/CMakeLists.txt"
+        }
+    },
+    {
+        "user_channel": "user/channel2",
+        "folder": "../library",
+        "sources":  {
+            "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
+            "../cases/lib/CMakeListsMacroPrefix.txt": "../library/CMakeLists.txt"
+        }
+    }
+]
+
+checks_nothing_file_prefix_map = [
+    {
+        "user_channel": "user/channel1",
+        "folder": "../library",
+        "sources":  {
+            "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
+            "../cases/lib/CMakeListsFilePrefix.txt": "../library/CMakeLists.txt"
+        }
+    },
+    {
+        "user_channel": "user/channel2",
+        "folder": "../library",
+        "sources":  {
+            "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
+            "../cases/lib/CMakeListsFilePrefix.txt": "../library/CMakeLists.txt"
         }
     }
 ]
 
 checks_nothing_debug_2_dirs_shared = [
     {
-        "command": "user/channel1 -s build_type=Debug -o shared=True",
+        "user_channel": "user/channel1",
         "folder": "../library",
         "sources":  {
             "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp"
         }
     },
     {
-        "command": "user/channel2 -s build_type=Debug -o shared=True",
+        "user_channel": "user/channel2",
         "folder": "../library",
         "sources":  {
             "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp"
@@ -308,14 +353,12 @@ checks_nothing_debug_2_dirs_shared = [
 
 checks_date = [
     {
-        "command": "user/channel",
         "folder": "../library",
         "sources":  {
             "../cases/lib/mydetlib_macros_date.cpp": "../library/src/mydetlib.cpp"
         }
     },
     {
-        "command": "user/channel",
         "folder": "../library",
         "sources":  {
             "../cases/lib/mydetlib_macros_date.cpp": "../library/src/mydetlib.cpp"
@@ -325,14 +368,12 @@ checks_date = [
 
 checks_time = [
     {
-        "command": "user/channel",
         "folder": "../library",
         "sources":  {
             "../cases/lib/mydetlib_macros_time.cpp": "../library/src/mydetlib.cpp"
         }
     },
     {
-        "command": "user/channel",
         "folder": "../library",
         "sources":  {
             "../cases/lib/mydetlib_macros_time.cpp": "../library/src/mydetlib.cpp"
@@ -342,14 +383,12 @@ checks_time = [
 
 checks_file = [
     {
-        "command": "user/channel",
         "folder": "../library",
         "sources":  {
             "../cases/lib/mydetlib_macros_file.cpp": "../library/src/mydetlib.cpp"
         }
     },
     {
-        "command": "user/channel",
         "folder": "../library",
         "sources":  {
             "../cases/lib/mydetlib_macros_file.cpp": "../library/src/mydetlib.cpp"
@@ -359,14 +398,14 @@ checks_file = [
 
 checks_file_2_dirs = [
     {
-        "command": "user/channel1",
+        "user_channel": "user/channel1",
         "folder": "../library",
         "sources":  {
             "../cases/lib/mydetlib_macros_file.cpp": "../library/src/mydetlib.cpp"
         }
     },
     {
-        "command": "user/channel2",
+        "user_channel": "user/channel2",
         "folder": "../library",
         "sources":  {
             "../cases/lib/mydetlib_macros_file.cpp": "../library/src/mydetlib.cpp"
@@ -377,14 +416,12 @@ checks_file_2_dirs = [
 
 checks_line = [
     {
-        "command": "user/channel",
         "folder": "../library",
         "sources":  {
             "../cases/lib/mydetlib_macros_line.cpp": "../library/src/mydetlib.cpp"
         }
     },
     {
-        "command": "user/channel",
         "folder": "../library",
         "sources":  {
             "../cases/lib/mydetlib_macros_line.cpp": "../library/src/mydetlib.cpp"
@@ -394,14 +431,12 @@ checks_line = [
 
 checks_uninitialized_debug = [
     {
-        "command": "user/channel -s build_type=Debug",
         "folder": "../library",
         "sources":  {
             "../cases/lib/mydetlib_uninitialized.cpp": "../library/src/mydetlib.cpp"
         }
     },
     {
-        "command": "user/channel -s build_type=Debug",
         "folder": "../library",
         "sources":  {
             "../cases/lib/mydetlib_uninitialized.cpp": "../library/src/mydetlib.cpp"
@@ -411,14 +446,12 @@ checks_uninitialized_debug = [
 
 checks_uninitialized_release = [
     {
-        "command": "user/channel -s build_type=Release",
         "folder": "../library",
         "sources":  {
             "../cases/lib/mydetlib_uninitialized.cpp": "../library/src/mydetlib.cpp"
         }
     },
     {
-        "command": "user/channel -s build_type=Release",
         "folder": "../library",
         "sources":  {
             "../cases/lib/mydetlib_uninitialized.cpp": "../library/src/mydetlib.cpp"
@@ -428,14 +461,12 @@ checks_uninitialized_release = [
 
 checks_initialized_debug = [
     {
-        "command": "user/channel -s build_type=Debug",
         "folder": "../library",
         "sources":  {
             "../cases/lib/mydetlib_initialized.cpp": "../library/src/mydetlib.cpp"
         }
     },
     {
-        "command": "user/channel -s build_type=Debug",
         "folder": "../library",
         "sources":  {
             "../cases/lib/mydetlib_initialized.cpp": "../library/src/mydetlib.cpp"
@@ -445,14 +476,12 @@ checks_initialized_debug = [
 
 checks_initialized_release = [
     {
-        "command": "user/channel -s build_type=Release",
         "folder": "../library",
         "sources":  {
             "../cases/lib/mydetlib_initialized.cpp": "../library/src/mydetlib.cpp"
         }
     },
     {
-        "command": "user/channel -s build_type=Release",
         "folder": "../library",
         "sources":  {
             "../cases/lib/mydetlib_initialized.cpp": "../library/src/mydetlib.cpp"
@@ -462,7 +491,6 @@ checks_initialized_release = [
 
 checks_lto_flags = [
     {
-        "command": "user/channel -s build_type=Release",
         "folder": "../library",
         "sources":  {
             "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
@@ -470,7 +498,6 @@ checks_lto_flags = [
         }
     },
     {
-        "command": "user/channel -s build_type=Release",
         "folder": "../library",
         "sources":  {
             "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
@@ -481,7 +508,6 @@ checks_lto_flags = [
 
 checks_random_seed_fix_lto_flags = [
     {
-        "command": "user/channel -s build_type=Release",
         "folder": "../library",
         "sources":  {
             "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
@@ -489,7 +515,6 @@ checks_random_seed_fix_lto_flags = [
         }
     },
     {
-        "command": "user/channel -s build_type=Release",
         "folder": "../library",
         "sources":  {
             "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
@@ -500,7 +525,6 @@ checks_random_seed_fix_lto_flags = [
 
 checks_consumer_empty = [
     {
-        "command": "user/channel",
         "folder": "../consumer",
         "sources":  {
             "../cases/consumer/main.cpp": "../consumer/src/main.cpp",
@@ -508,7 +532,6 @@ checks_consumer_empty = [
         }
     },
     {
-        "command": "user/channel",
         "folder": "../consumer",
         "sources":  {
             "../cases/consumer/main.cpp": "../consumer/src/main.cpp",
@@ -521,15 +544,15 @@ variation_cases = [
     Case("Empty lib Release", checks_nothing_release, False),
     Case("Consumer Release", checks_consumer_empty, False),
     Case("Empty lib Release", checks_nothing_release, True),
-    Case("Empty lib Debug", checks_nothing_debug, False),
-    Case("Empty lib Debug", checks_nothing_debug, True),
+    Case("Empty lib Debug", checks_nothing_debug, False, build_type="Debug"),
+    Case("Empty lib Debug", checks_nothing_debug, True, build_type="Debug"),
     Case("Empty lib Release, 2 dirs", checks_nothing_release_2_dirs, False),
-    Case("Empty lib Debug, 2 dirs", checks_nothing_debug_2_dirs, False),
+    Case("Empty lib Debug, 2 dirs", checks_nothing_debug_2_dirs, False, build_type="Debug"),
     Case("Empty lib Release, 2 dirs", checks_nothing_release_2_dirs, True),
-    Case("Empty lib Debug, 2 dirs", checks_nothing_debug_2_dirs, True),
-    Case("Empty lib Debug, 2 dirs with Fix", checks_nothing_debug_2_dirs_fix, True),    
-    Case("Empty lib Debug, 2 dirs shared",checks_nothing_debug_2_dirs_shared, False),
-    #Case("Empty lib Debug, 2 dirs shared",checks_nothing_debug_2_dirs_shared, True),
+    Case("Empty lib Debug, 2 dirs", checks_nothing_debug_2_dirs, True, build_type="Debug"),
+    Case("Empty lib Debug, 2 dirs with Debug Fix", checks_nothing_debug_prefix_map, True, build_type="Debug"),    
+    Case("Empty lib Debug, 2 dirs shared",checks_nothing_debug_2_dirs_shared, False, build_type="Debug"),
+    #Case("Empty lib Debug, 2 dirs shared",checks_nothing_debug_2_dirs_shared, True, shared=True),
     Case("Lib using __DATE__ macro", checks_date, False),
     Case("Lib using __TIME__ macro", checks_time, False),
     Case("Lib using __FILE__ macro", checks_file, False),
@@ -538,7 +561,7 @@ variation_cases = [
     Case("Lib using __DATE__ macro", checks_date, True),
     Case("Lib using __TIME__ macro", checks_time, True),
     Case("Lib using __FILE__ macro", checks_file, True),
-    Case("Lib using __FILE__ macro, 2 dirs", checks_file_2_dirs, True),
+    Case("Lib using __FILE__ macro, 2 dirs", checks_file_2_dirs, True)
     #Case("Lib using __LINE__ macro", checks_line, True),
     #Case("Initialized data Debug", checks_uninitialized_debug, False),
     #Case("Initialized data Release", checks_uninitialized_release, False),
@@ -552,6 +575,9 @@ variation_cases = [
 
 if "gcc" in compiler:
     variation_cases.extend([
+        Case("Lib using __FILE__ macro, 2 dirs Macro Fix", checks_nothing_macro_prefix_map, True),
+        Case("Lib using __FILE__ macro, Debug 2 dirs Macro Fix", checks_nothing_macro_prefix_map, True, build_type="Debug"),
+        Case("Lib using __FILE__ macro, Debug 2 dirs File Fix", checks_nothing_file_prefix_map, True, build_type="Debug"),
         Case("gcc: Use LTO flags", checks_lto_flags, False),
         Case("gcc: Empty lib Fix LTO", checks_random_seed_fix_lto_flags, False),
         Case("gcc: Use LTO flags", checks_lto_flags, True),
