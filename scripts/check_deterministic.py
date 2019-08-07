@@ -479,9 +479,29 @@ checks_random_seed_fix_lto_flags = [
     }
 ]
 
+checks_consumer_empty = [
+    {
+        "command": "user/channel",
+        "folder": "../consumer",
+        "sources":  {
+            "../cases/consumer/main.cpp": "../consumer/src/main.cpp",
+            "../cases/consumer/CMakeLists.txt": "../consumer/CMakeLists.txt"
+        }
+    },
+    {
+        "command": "user/channel",
+        "folder": "../consumer",
+        "sources":  {
+            "../cases/consumer/main.cpp": "../consumer/src/main.cpp",
+            "../cases/consumer/CMakeLists.txt": "../consumer/CMakeLists.txt"
+        }
+    }
+]
+
 
 variation_cases = [
     Case("Empty library Release", checks_nothing_release, False),
+    Case("Consumer Release", checks_consumer_empty, False),
     Case("Empty library Release", checks_nothing_release, True),
     Case("Empty library Debug", checks_nothing_debug, False),
     Case("Empty library Debug", checks_nothing_debug, True),
