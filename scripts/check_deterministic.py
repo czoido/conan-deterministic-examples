@@ -276,7 +276,7 @@ checks_nothing_debug_2_dirs_fix = [
         "folder": "../library",
         "sources":  {
             "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
-            "../cases/lib/CMakeListsFixFileDebugDirs.txt": "../library/CMakeLists.txt"
+            "../cases/lib/CMakeListsDebugPrefix.txt": "../library/CMakeLists.txt"
         }
     },
     {
@@ -284,7 +284,7 @@ checks_nothing_debug_2_dirs_fix = [
         "folder": "../library",
         "sources":  {
             "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
-            "../cases/lib/CMakeListsFixFileDebugDirs.txt": "../library/CMakeLists.txt"
+            "../cases/lib/CMakeListsDebugPrefix.txt": "../library/CMakeLists.txt"
         }
     }
 ]
