@@ -50,11 +50,56 @@ different causes of indeterminism and tries to fix them two ways:
 
 ## Timestamps introduced by the compiler / linker
 
-Because of the use of macros like `__DATE__` or `__TIME__` or because of the definition of the file format (like `PE` in Windows and `Mach-O` in MacOs)
+There are two main reasons for that our binaries could end up containing time information that will make them
+not reproducible:
 
-Windows: patch binaries
-MacOs: option to set `ZERO_AR_DATE`
-Linux: set `SOURCE_DATE_EPOCH`
+- The use of `__DATE__` or `__TIME__` macros in the sources.
+
+- When the definition of the file format forces to store time information in the object files. This is the
+  case of `Portable Executable` fornmat in Windows and `Mach-O` in MacOs. In Linux `ELF` files do not encode
+  any kind of timestamp. 
+
+### Possible solutions
+
+The solutions depend on the compiler used:
+
+- `msvc` can neither set the timestamps for the macros or avoid introducing time information from the `PE`
+  format with environment variables or compiler flags. The only way to remove this information from the
+  binaries is parsing the file format and replacing the bytes that contain non-deterministic information. That
+  can be done in the `post_build` step launching patching tools.
+
+- `gcc` detects the existence of the `SOURCE_DATE_EPOCH` environment variable. If this variable is set, its
+  value specifies a UNIX timestamp to be used in replacement of the current date and time in the `__DATE__`
+  and `__TIME__` macros, so that the embedded timestamps become reproducible. The value can be set to a known
+  timestamp such as the last modification time of the source or package.
+
+- `clang` makes use of `ZERO_AR_DATE` that if set, resets the timestamp that is introduced in the binary
+  setting it to epoch 0.
+
+These variables can be set by the Conan hook in the `pre_build` step calling a function like `set_environment` and the restored if necessary in the `post_build` step with something like `reset_environment`. 
+
+```python
+def set_environment(self):
+    if self._os == "Linux":
+        self._old_source_date_epoch = os.environ.get("SOURCE_DATE_EPOCH")
+        timestamp = "1564483496"
+        os.environ["SOURCE_DATE_EPOCH"] = timestamp
+        self._output.info(
+            "set SOURCE_DATE_EPOCH: {}".format(timestamp))
+    elif self._os == "Macos":
+        os.environ["ZERO_AR_DATE"] = "1"
+        self._output.info(
+            "set ZERO_AR_DATE: {}".format(timestamp))
+
+def reset_environment(self):
+    if self._os == "Linux":
+        if self._old_source_date_epoch is None:
+            del os.environ["SOURCE_DATE_EPOCH"]
+        else:
+            os.environ["SOURCE_DATE_EPOCH"] = self._old_source_date_epoch
+    elif self._os == "Macos":
+        del os.environ["ZERO_AR_DATE"]
+```
 
 ## Build folder information propagated to binaries
 

@@ -25,27 +25,23 @@ class LibPatcher(object):
         self._compiler = self._conanfile.settings.get_safe('compiler')
 
     def set_environment(self):
-        if self._os == "Linux" or self._os == "Macos":
-            # set SOURCE_DATE_EPOC to arbitraty value to test functionality
+        try:
+            # Linux: set SOURCE_DATE_EPOC to arbitraty value to test functionality
             # should be set to last modification of sources with something like:
             # SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)
-            # 1564483496
-            timestamp = "1564483496"
+            # MacOs: set timestamops to epoch 0
             if self._os == "Linux":
                 self._old_source_date_epoch = os.environ.get("SOURCE_DATE_EPOCH")
-
-            try:
-                if self._os == "Linux":
-                    os.environ["SOURCE_DATE_EPOCH"] = timestamp
-                    self._output.info(
-                        "set SOURCE_DATE_EPOCH: {}".format(timestamp))
-                elif self._os == "Macos":
-                    os.environ["ZERO_AR_DATE"] = "1"
-                    self._output.info(
-                        "set ZERO_AR_DATE: {}".format(timestamp))
-
-            except:
-                pass
+                timestamp = "1564483496"
+                os.environ["SOURCE_DATE_EPOCH"] = timestamp
+                self._output.info(
+                    "set SOURCE_DATE_EPOCH: {}".format(timestamp))
+            elif self._os == "Macos":
+                os.environ["ZERO_AR_DATE"] = "1"
+                self._output.info(
+                    "set ZERO_AR_DATE: {}".format(timestamp))
+        except:
+            pass
 
     def reset_environment(self):
         if self._os == "Linux":
