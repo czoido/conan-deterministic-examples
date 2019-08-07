@@ -1,3 +1,6 @@
 library/src/mydetlib.cpp
 
 library/CMakeLists.txt
+consumer/CMakeLists.txt
+*.DS_Store
+consumer/src/main.cpp
