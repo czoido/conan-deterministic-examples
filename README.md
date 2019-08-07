@@ -4,9 +4,14 @@
 
 # What are deterministic builds ?
 
-Deterministic builds is the process of building sources at the same revision with the same build environment and build instructions producing exactly the same binary in two builds, even if they are made on different machines, build directories and with different names. They are also sometimes called reproducible or hermetic builds.
+Deterministic builds is the process of building sources at the same revision with the same build environment
+and build instructions producing exactly the same binary in two builds, even if they are made on different
+machines, build directories and with different names. They are also sometimes called reproducible or hermetic
+builds.
 
-Let's note that deterministic builds are not something that happens naturally. Normal projects do not produce deterministic builds and the reasons that they are not produced can be different for each operating system and compiler.
+Let's note that deterministic builds are not something that happens naturally. Normal projects do not produce
+deterministic builds and the reasons that they are not produced can be different for each operating system and
+compiler.
 
 There are lots of efforts coming from different organizations in the past years to achieve deterministic builds such as [Chromium](https://www.chromium.org/developers/testing/isolated-testing/deterministic-builds), [Reproducible builds](https://reproducible-builds.org/), or [Yocto](https://wiki.yoctoproject.org/wiki/Reproducible_Builds).
 
@@ -14,13 +19,27 @@ There are lots of efforts coming from different organizations in the past years 
 
 There are two main reasons why deterministic builds are important:
 
- - **Security**. Modifying binaries instead of the upstream source code can make the changes invisible for the original authors. This can be fatal in safety critical environments such as medical, aerospace and automotive. So promising indentical results for given inputs allows third parties to come to a consensus con a *correct* result.
+ - **Security**. Modifying binaries instead of the upstream source code can make the changes invisible for the
+   original authors. This can be fatal in safety critical environments such as medical, aerospace and
+   automotive. So promising indentical results for given inputs allows third parties to come to a consensus
+   con a *correct* result.
 
-- **Storaging binaries**. If you want to have a repository to store your binaries you do not want to generate binaries binaries with random checksums when sources at the same revision. That could lead the system to make store different binaries that in fact should be the same.
+- **Storaging binaries**. If you want to have a repository to store your binaries you do not want to generate
+  binaries binaries with random checksums when sources at the same revision. That could lead the system to
+  make store different binaries that in fact should be the same.
 
-The second case could be a concern if you are using Conan to manage your packages. For example, if you have revisions enabled and are working in Windows or MacOs the most simple library will lead to two different binaries  
+The second case could be a concern if you are using Conan to manage your packages. For example, if you have
+revisions enabled and are working in Windows or MacOs the most simple library will lead to two different
+binaries  
 
 # Sources of variation
+
+There are many different reasons for that your builds can end being non-deterministic. Reasons will vary
+between different operating systems and compilers. Not all compilers or linkers have the option to introduce
+certain flags to fix the sources of indeterminism. In `gcc` and `clang` there are some options or environment
+variables that can be set to minimize the indeterminisitic but using `msvc` you will probably need to patch
+the build binaries as there are no options available to prevent the propagation of certain information to the
+binaries.
 
 ## Timestamps introduced by the compiler / linker
 
@@ -31,6 +50,8 @@ MacOs: option to set `ZERO_AR_DATE`
 Linux: set `SOURCE_DATE_EPOCH`
 
 ## Build folder information propagated to binaries
+
+`__FILE__` macro
 
 ## Randomness created by the compiler
 
