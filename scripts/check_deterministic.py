@@ -205,16 +205,16 @@ checks_nothing_release = [
         "command": "user/channel -s build_type=Release",
         "folder": "../library",
         "sources":  {
-            "../cases/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
-            "../cases/CMakeListsDefault.txt": "../library/CMakeLists.txt"
+            "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
+            "../cases/lib/CMakeLists.txt": "../library/CMakeLists.txt"
         }
     },
     {
         "command": "user/channel -s build_type=Release",
         "folder": "../library",
         "sources":  {
-            "../cases/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
-            "../cases/CMakeListsDefault.txt": "../library/CMakeLists.txt"
+            "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
+            "../cases/lib/CMakeLists.txt": "../library/CMakeLists.txt"
         }
     }
 ]
@@ -224,14 +224,14 @@ checks_nothing_debug = [
         "command": "user/channel -s build_type=Debug",
         "folder": "../library",
         "sources":  {
-            "../cases/mydetlib_base.cpp": "../library/src/mydetlib.cpp"
+            "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp"
         }
     },
     {
         "command": "user/channel -s build_type=Debug",
         "folder": "../library",
         "sources":  {
-            "../cases/mydetlib_base.cpp": "../library/src/mydetlib.cpp"
+            "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp"
         }
     }
 ]
@@ -241,14 +241,14 @@ checks_nothing_release_2_dirs = [
         "command": "user/channel1 -s build_type=Release",
         "folder": "../library",
         "sources":  {
-            "../cases/mydetlib_base.cpp": "../library/src/mydetlib.cpp"
+            "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp"
         }
     },
     {
         "command": "user/channel2 -s build_type=Release",
         "folder": "../library",
         "sources":  {
-            "../cases/mydetlib_base.cpp": "../library/src/mydetlib.cpp"
+            "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp"
         }
     }
 ]
@@ -258,14 +258,14 @@ checks_nothing_debug_2_dirs = [
         "command": "user/channel1 -s build_type=Debug",
         "folder": "../library",
         "sources":  {
-            "../cases/mydetlib_base.cpp": "../library/src/mydetlib.cpp"
+            "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp"
         }
     },
     {
         "command": "user/channel2 -s build_type=Debug",
         "folder": "../library",
         "sources":  {
-            "../cases/mydetlib_base.cpp": "../library/src/mydetlib.cpp"
+            "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp"
         }
     }
 ]
@@ -275,14 +275,14 @@ checks_nothing_debug_2_dirs_shared = [
         "command": "user/channel1 -s build_type=Debug -o shared=True",
         "folder": "../library",
         "sources":  {
-            "../cases/mydetlib_base.cpp": "../library/src/mydetlib.cpp"
+            "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp"
         }
     },
     {
         "command": "user/channel2 -s build_type=Debug -o shared=True",
         "folder": "../library",
         "sources":  {
-            "../cases/mydetlib_base.cpp": "../library/src/mydetlib.cpp"
+            "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp"
         }
     }
 ]
@@ -292,14 +292,14 @@ checks_date = [
         "command": "user/channel",
         "folder": "../library",
         "sources":  {
-            "../cases/mydetlib_macros_date.cpp": "../library/src/mydetlib.cpp"
+            "../cases/lib/mydetlib_macros_date.cpp": "../library/src/mydetlib.cpp"
         }
     },
     {
         "command": "user/channel",
         "folder": "../library",
         "sources":  {
-            "../cases/mydetlib_macros_date.cpp": "../library/src/mydetlib.cpp"
+            "../cases/lib/mydetlib_macros_date.cpp": "../library/src/mydetlib.cpp"
         }
     }
 ]
@@ -309,14 +309,14 @@ checks_time = [
         "command": "user/channel",
         "folder": "../library",
         "sources":  {
-            "../cases/mydetlib_macros_time.cpp": "../library/src/mydetlib.cpp"
+            "../cases/lib/mydetlib_macros_time.cpp": "../library/src/mydetlib.cpp"
         }
     },
     {
         "command": "user/channel",
         "folder": "../library",
         "sources":  {
-            "../cases/mydetlib_macros_time.cpp": "../library/src/mydetlib.cpp"
+            "../cases/lib/mydetlib_macros_time.cpp": "../library/src/mydetlib.cpp"
         }
     }
 ]
@@ -326,14 +326,14 @@ checks_file = [
         "command": "user/channel",
         "folder": "../library",
         "sources":  {
-            "../cases/mydetlib_macros_file.cpp": "../library/src/mydetlib.cpp"
+            "../cases/lib/mydetlib_macros_file.cpp": "../library/src/mydetlib.cpp"
         }
     },
     {
         "command": "user/channel",
         "folder": "../library",
         "sources":  {
-            "../cases/mydetlib_macros_file.cpp": "../library/src/mydetlib.cpp"
+            "../cases/lib/mydetlib_macros_file.cpp": "../library/src/mydetlib.cpp"
         }
     }
 ]
@@ -343,14 +343,14 @@ checks_file_2_dirs = [
         "command": "user/channel1",
         "folder": "../library",
         "sources":  {
-            "../cases/mydetlib_macros_file.cpp": "../library/src/mydetlib.cpp"
+            "../cases/lib/mydetlib_macros_file.cpp": "../library/src/mydetlib.cpp"
         }
     },
     {
         "command": "user/channel2",
         "folder": "../library",
         "sources":  {
-            "../cases/mydetlib_macros_file.cpp": "../library/src/mydetlib.cpp"
+            "../cases/lib/mydetlib_macros_file.cpp": "../library/src/mydetlib.cpp"
         }
     }
 ]
@@ -361,14 +361,14 @@ checks_line = [
         "command": "user/channel",
         "folder": "../library",
         "sources":  {
-            "../cases/mydetlib_macros_line.cpp": "../library/src/mydetlib.cpp"
+            "../cases/lib/mydetlib_macros_line.cpp": "../library/src/mydetlib.cpp"
         }
     },
     {
         "command": "user/channel",
         "folder": "../library",
         "sources":  {
-            "../cases/mydetlib_macros_line.cpp": "../library/src/mydetlib.cpp"
+            "../cases/lib/mydetlib_macros_line.cpp": "../library/src/mydetlib.cpp"
         }
     }
 ]
@@ -378,14 +378,14 @@ checks_uninitialized_debug = [
         "command": "user/channel -s build_type=Debug",
         "folder": "../library",
         "sources":  {
-            "../cases/mydetlib_uninitialized.cpp": "../library/src/mydetlib.cpp"
+            "../cases/lib/mydetlib_uninitialized.cpp": "../library/src/mydetlib.cpp"
         }
     },
     {
         "command": "user/channel -s build_type=Debug",
         "folder": "../library",
         "sources":  {
-            "../cases/mydetlib_uninitialized.cpp": "../library/src/mydetlib.cpp"
+            "../cases/lib/mydetlib_uninitialized.cpp": "../library/src/mydetlib.cpp"
         }
     }
 ]
@@ -395,14 +395,14 @@ checks_uninitialized_release = [
         "command": "user/channel -s build_type=Release",
         "folder": "../library",
         "sources":  {
-            "../cases/mydetlib_uninitialized.cpp": "../library/src/mydetlib.cpp"
+            "../cases/lib/mydetlib_uninitialized.cpp": "../library/src/mydetlib.cpp"
         }
     },
     {
         "command": "user/channel -s build_type=Release",
         "folder": "../library",
         "sources":  {
-            "../cases/mydetlib_uninitialized.cpp": "../library/src/mydetlib.cpp"
+            "../cases/lib/mydetlib_uninitialized.cpp": "../library/src/mydetlib.cpp"
         }
     }
 ]
@@ -412,14 +412,14 @@ checks_initialized_debug = [
         "command": "user/channel -s build_type=Debug",
         "folder": "../library",
         "sources":  {
-            "../cases/mydetlib_initialized.cpp": "../library/src/mydetlib.cpp"
+            "../cases/lib/mydetlib_initialized.cpp": "../library/src/mydetlib.cpp"
         }
     },
     {
         "command": "user/channel -s build_type=Debug",
         "folder": "../library",
         "sources":  {
-            "../cases/mydetlib_initialized.cpp": "../library/src/mydetlib.cpp"
+            "../cases/lib/mydetlib_initialized.cpp": "../library/src/mydetlib.cpp"
         }
     }
 ]
@@ -429,14 +429,14 @@ checks_initialized_release = [
         "command": "user/channel -s build_type=Release",
         "folder": "../library",
         "sources":  {
-            "../cases/mydetlib_initialized.cpp": "../library/src/mydetlib.cpp"
+            "../cases/lib/mydetlib_initialized.cpp": "../library/src/mydetlib.cpp"
         }
     },
     {
         "command": "user/channel -s build_type=Release",
         "folder": "../library",
         "sources":  {
-            "../cases/mydetlib_initialized.cpp": "../library/src/mydetlib.cpp"
+            "../cases/lib/mydetlib_initialized.cpp": "../library/src/mydetlib.cpp"
         }
     }
 ]
@@ -446,16 +446,16 @@ checks_lto_flags = [
         "command": "user/channel -s build_type=Release",
         "folder": "../library",
         "sources":  {
-            "../cases/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
-            "../cases/CMakeListsLto.txt": "../library/CMakeLists.txt"
+            "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
+            "../cases/lib/CMakeListsLto.txt": "../library/CMakeLists.txt"
         }
     },
     {
         "command": "user/channel -s build_type=Release",
         "folder": "../library",
         "sources":  {
-            "../cases/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
-            "../cases/CMakeListsLto.txt": "../library/CMakeLists.txt"
+            "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
+            "../cases/lib/CMakeListsLto.txt": "../library/CMakeLists.txt"
         }
     }
 ]
@@ -465,16 +465,16 @@ checks_random_seed_fix_lto_flags = [
         "command": "user/channel -s build_type=Release",
         "folder": "../library",
         "sources":  {
-            "../cases/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
-            "../cases/CMakeListsFixLto.txt": "../library/CMakeLists.txt"
+            "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
+            "../cases/lib/CMakeListsFixLto.txt": "../library/CMakeLists.txt"
         }
     },
     {
         "command": "user/channel -s build_type=Release",
         "folder": "../library",
         "sources":  {
-            "../cases/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
-            "../cases/CMakeListsFixLto.txt": "../library/CMakeLists.txt"
+            "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
+            "../cases/lib/CMakeListsFixLto.txt": "../library/CMakeLists.txt"
         }
     }
 ]
