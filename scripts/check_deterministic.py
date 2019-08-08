@@ -597,12 +597,12 @@ launch_cases(variation_cases)
 
 if "gcc" in compiler:
     gcc_cases = [
-        Case("Lib using __FILE__ macro, 2 dirs Macro Fix",
-             checks_nothing_macro_prefix_map, True),
-        Case("Lib using __FILE__ macro, Debug 2 dirs Macro Fix",
-             checks_nothing_macro_prefix_map, True, build_type="Debug"),
-        Case("Lib using __FILE__ macro, Debug 2 dirs File Fix",
-             checks_nothing_file_prefix_map, True, build_type="Debug"),
+        #Case("Lib using __FILE__ macro, 2 dirs Macro Fix",
+        #     checks_nothing_macro_prefix_map, True),
+        #Case("Lib using __FILE__ macro, Debug 2 dirs Macro Fix",
+        #     checks_nothing_macro_prefix_map, True, build_type="Debug"),
+        #Case("Lib using __FILE__ macro, Debug 2 dirs File Fix",
+        #     checks_nothing_file_prefix_map, True, build_type="Debug"),
         Case("gcc: Use LTO flags", checks_lto_flags, False),
         Case("gcc: Empty lib Fix LTO", checks_random_seed_fix_lto_flags, False),
         Case("gcc: Use LTO flags", checks_lto_flags, True),
