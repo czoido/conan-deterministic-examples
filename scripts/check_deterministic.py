@@ -33,6 +33,7 @@ def get_revision(console_txt):
     prev = console_txt.find(search_str)
     return console_txt[prev+len(search_str)+1:-6]
 
+
 def get_compiler(console_txt):
     for line in console_txt.splitlines():
         line = str(line)
@@ -40,6 +41,7 @@ def get_compiler(console_txt):
             comp_pos = line.find("compiler=")
             return line[comp_pos+len("compiler="):-1]
     return ""
+
 
 def hook_output(console_txt):
     for line in console_txt.splitlines():
@@ -115,7 +117,9 @@ def set_system_rand_time():
     elif os.environ.get('APPVEYOR') == 'True' and sys.platform == 'win32':
         _win_set_time(time_tuple)
 
+
 compiler = ""
+
 
 class Check(object):
     def __init__(self, checks, build_type, shared):
@@ -137,11 +141,12 @@ class Check(object):
             folder = check["folder"]
 
             if "user_channel" in check:
-               user_channel = check["user_channel"]
+                user_channel = check["user_channel"]
             else:
                 user_channel = "user/channel"
 
-            user_channel = user_channel + " -s build_type={}".format(self._build_type)
+            user_channel = user_channel + \
+                " -s build_type={}".format(self._build_type)
             if self._shared:
                 user_channel = user_channel + "-o shared=True"
 
@@ -183,7 +188,8 @@ class Case(object):
         self._activate_hook = activate_hook
         self._build_type = build_type
         self._shared = shared
-        self._checks = Check(checks, build_type=self._build_type, shared=self._shared)
+        self._checks = Check(
+            checks, build_type=self._build_type, shared=self._shared)
 
     def launch_case(self):
         print("\n")
@@ -547,11 +553,15 @@ variation_cases = [
     Case("Empty lib Debug", checks_nothing_debug, False, build_type="Debug"),
     Case("Empty lib Debug", checks_nothing_debug, True, build_type="Debug"),
     Case("Empty lib Release, 2 dirs", checks_nothing_release_2_dirs, False),
-    Case("Empty lib Debug, 2 dirs", checks_nothing_debug_2_dirs, False, build_type="Debug"),
+    Case("Empty lib Debug, 2 dirs", checks_nothing_debug_2_dirs,
+         False, build_type="Debug"),
     Case("Empty lib Release, 2 dirs", checks_nothing_release_2_dirs, True),
-    Case("Empty lib Debug, 2 dirs", checks_nothing_debug_2_dirs, True, build_type="Debug"),
-    Case("Empty lib Debug, 2 dirs with Debug Fix", checks_nothing_debug_prefix_map, True, build_type="Debug"),    
-    Case("Empty lib Debug, 2 dirs shared",checks_nothing_debug_2_dirs_shared, False, build_type="Debug"),
+    Case("Empty lib Debug, 2 dirs",
+         checks_nothing_debug_2_dirs, True, build_type="Debug"),
+    Case("Empty lib Debug, 2 dirs with Debug Fix",
+         checks_nothing_debug_prefix_map, True, build_type="Debug"),
+    Case("Empty lib Debug, 2 dirs shared",
+         checks_nothing_debug_2_dirs_shared, False, build_type="Debug"),
     #Case("Empty lib Debug, 2 dirs shared",checks_nothing_debug_2_dirs_shared, True, shared=True),
     Case("Lib using __DATE__ macro", checks_date, False),
     Case("Lib using __TIME__ macro", checks_time, False),
@@ -573,24 +583,35 @@ variation_cases = [
     #Case("Uninitialized data Release", checks_uninitialized_release, True),
 ]
 
+results = {}
+
+def launch_cases(cases):
+    for case in cases:
+        hook_state, success = case.launch_case()
+        if not case.name in results:
+            results[case.name] = {True: None, False: None}
+
+        results[case.name][hook_state] = success
+
+
+launch_cases(variation_cases)
+
+gcc_cases = []
+
 if "gcc" in compiler:
-    variation_cases.extend([
-        Case("Lib using __FILE__ macro, 2 dirs Macro Fix", checks_nothing_macro_prefix_map, True),
-        Case("Lib using __FILE__ macro, Debug 2 dirs Macro Fix", checks_nothing_macro_prefix_map, True, build_type="Debug"),
-        Case("Lib using __FILE__ macro, Debug 2 dirs File Fix", checks_nothing_file_prefix_map, True, build_type="Debug"),
+    gcc_cases.extend([
+        Case("Lib using __FILE__ macro, 2 dirs Macro Fix",
+             checks_nothing_macro_prefix_map, True),
+        Case("Lib using __FILE__ macro, Debug 2 dirs Macro Fix",
+             checks_nothing_macro_prefix_map, True, build_type="Debug"),
+        Case("Lib using __FILE__ macro, Debug 2 dirs File Fix",
+             checks_nothing_file_prefix_map, True, build_type="Debug"),
         Case("gcc: Use LTO flags", checks_lto_flags, False),
         Case("gcc: Empty lib Fix LTO", checks_random_seed_fix_lto_flags, False),
         Case("gcc: Use LTO flags", checks_lto_flags, True),
         Case("gcc: Empty lib Fix LTO", checks_random_seed_fix_lto_flags, True)
     ])
 
-results = {}
-
-for case in variation_cases:
-    hook_state, success = case.launch_case()
-    if not case.name in results:
-        results[case.name] = {True: None, False: None}
-
-    results[case.name][hook_state] = success
+launch_cases(gcc_cases)
 
 print_results(results)
