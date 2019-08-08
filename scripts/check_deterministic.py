@@ -8,6 +8,7 @@ from datetime import datetime
 
 from colorama import Fore, Style, init
 
+compiler = ""
 
 def run(cmd, show=True):
     if show:
@@ -118,9 +119,6 @@ def set_system_rand_time():
         _win_set_time(time_tuple)
 
 
-compiler = ""
-
-
 class Check(object):
     def __init__(self, checks, build_type, shared):
         self._checks = checks
@@ -154,6 +152,7 @@ class Check(object):
             out = run(
                 "cd {} && conan create . {}".format(folder, user_channel))
             # have to change
+            global compiler
             compiler = get_compiler(out)
             bin_files = get_binary_names(out)
             hook_output(out)
@@ -596,10 +595,8 @@ def launch_cases(cases):
 
 launch_cases(variation_cases)
 
-gcc_cases = []
-
 if "gcc" in compiler:
-    gcc_cases.extend([
+    gcc_cases = [
         Case("Lib using __FILE__ macro, 2 dirs Macro Fix",
              checks_nothing_macro_prefix_map, True),
         Case("Lib using __FILE__ macro, Debug 2 dirs Macro Fix",
@@ -610,8 +607,9 @@ if "gcc" in compiler:
         Case("gcc: Empty lib Fix LTO", checks_random_seed_fix_lto_flags, False),
         Case("gcc: Use LTO flags", checks_lto_flags, True),
         Case("gcc: Empty lib Fix LTO", checks_random_seed_fix_lto_flags, True)
-    ])
+    ]
 
-launch_cases(gcc_cases)
+    launch_cases(gcc_cases)
+
 
 print_results(results)
