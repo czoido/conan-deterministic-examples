@@ -13,14 +13,14 @@ Let's note that deterministic builds are not something that happens naturally. N
 deterministic builds and the reasons that they are not produced can be different for each operating system and
 compiler.
 
+Deterministic builds should be guaranteed for a given *build environment*. That means that certain variables
+such as the operating system, build system versions, target architecture should remain the same between
+different builds.
+
 There are lots of efforts coming from different organizations in the past years to achieve deterministic
 builds such as [Chromium](https://www.chromium.org/developers/testing/isolated-testing/deterministic-builds),
 [Reproducible builds](https://reproducible-builds.org/), or
 [Yocto](https://wiki.yoctoproject.org/wiki/Reproducible_Builds).
-
-Deterministic builds should be guaranteed for a given *build environment*. That means that certain variables
-such as the operating system, build system versions, target architecture should remain the same between
-different builds.
 
 # The importance of deterministic builds
 
