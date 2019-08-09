@@ -34,13 +34,18 @@ def get_revision(console_txt):
 
 
 def get_compiler():
+    compiler = ""
+    version = ""
     output = run("conan profile show default", False)
     for line in output.splitlines():
         line = str(line)
         if "compiler=" in line:
             comp_pos = line.find("compiler=")
-            return line[comp_pos+len("compiler="):-1]
-    return ""
+            compiler = line[comp_pos+len("compiler="):-1]
+        if "compiler.version=" in line:
+            comp_pos = line.find("compiler.version=")
+            version = line[comp_pos+len("compiler.version="):-1]
+    return compiler, version
 
 
 def hook_output(console_txt):
@@ -588,23 +593,31 @@ def launch_cases(cases):
 
         results[case.name][hook_state] = success
 
-compiler = get_compiler()
+compiler, version = get_compiler()
+print("Using compiler {} version {}".format(compiler, version))
 
 launch_cases(common_cases)
 
 if "gcc" in compiler:
     gcc_cases = [
-        #Case("Lib using __FILE__ macro, 2 dirs Macro Fix",
-        #     checks_nothing_macro_prefix_map, True),
-        #Case("Lib using __FILE__ macro, Debug 2 dirs Macro Fix",
-        #     checks_nothing_macro_prefix_map, True, build_type="Debug"),
-        #Case("Lib using __FILE__ macro, Debug 2 dirs File Fix",
-        #     checks_nothing_file_prefix_map, True, build_type="Debug"),
         Case("gcc: Use LTO flags", checks_lto_flags, False),
         Case("gcc: Empty lib Fix LTO", checks_random_seed_fix_lto_flags, False),
         Case("gcc: Use LTO flags", checks_lto_flags, True),
         Case("gcc: Empty lib Fix LTO", checks_random_seed_fix_lto_flags, True)
     ]
+
+    gcc_8_cases = [
+        Case("Lib using __FILE__ macro, 2 dirs Macro Fix",
+             checks_nothing_macro_prefix_map, True),
+        Case("Lib using __FILE__ macro, Debug 2 dirs Macro Fix",
+             checks_nothing_macro_prefix_map, True, build_type="Debug"),
+        Case("Lib using __FILE__ macro, Debug 2 dirs File Fix",
+             checks_nothing_file_prefix_map, True, build_type="Debug")
+    ]
+
+    if int(version)>=8:
+        gcc_cases.extend(gcc_8_cases)
+
 
     launch_cases(gcc_cases)
 
