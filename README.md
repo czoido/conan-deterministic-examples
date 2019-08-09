@@ -13,7 +13,14 @@ Let's note that deterministic builds are not something that happens naturally. N
 deterministic builds and the reasons that they are not produced can be different for each operating system and
 compiler.
 
-There are lots of efforts coming from different organizations in the past years to achieve deterministic builds such as [Chromium](https://www.chromium.org/developers/testing/isolated-testing/deterministic-builds), [Reproducible builds](https://reproducible-builds.org/), or [Yocto](https://wiki.yoctoproject.org/wiki/Reproducible_Builds).
+There are lots of efforts coming from different organizations in the past years to achieve deterministic
+builds such as [Chromium](https://www.chromium.org/developers/testing/isolated-testing/deterministic-builds),
+[Reproducible builds](https://reproducible-builds.org/), or
+[Yocto](https://wiki.yoctoproject.org/wiki/Reproducible_Builds).
+
+Deterministic builds should be guaranteed for a given *build environment*. That means that certain variables
+such as the operating system, build system versions, target architecture should remain the same between
+different builds.
 
 # The importance of deterministic builds
 
@@ -78,7 +85,8 @@ The solutions depend on the compiler used:
 - `clang` makes use of `ZERO_AR_DATE` that if set, resets the timestamp that is introduced in the binary
   setting it to epoch 0.
 
-These variables can be set by the Conan hook in the `pre_build` step calling a function like `set_environment` and the restored if necessary in the `post_build` step with something like `reset_environment`. 
+These variables can be set by the Conan hook in the `pre_build` step calling a function like `set_environment`
+and the restored if necessary in the `post_build` step with something like `reset_environment`. 
 
 ```python
 def set_environment(self):
@@ -105,7 +113,8 @@ def reset_environment(self):
 
 ## Build folder information propagated to binaries
 
-If the same sources are compiled in different folders sometimes folder information is propagated to the binaries. This can happen mainly for two reasons:
+If the same sources are compiled in different folders sometimes folder information is propagated to the
+binaries. This can happen mainly for two reasons:
 
 - Use of macros that contain current file information like `__FILE__` macro.
 - Creating debug binaries that store information of where the sources are.
