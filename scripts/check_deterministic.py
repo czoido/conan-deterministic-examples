@@ -545,7 +545,7 @@ checks_consumer_empty = [
     }
 ]
 
-variation_cases = [
+common_cases = [
     Case("Empty lib Release", checks_nothing_release, False),
     Case("Consumer Release", checks_consumer_empty, False),
     Case("Empty lib Release", checks_nothing_release, True),
@@ -593,7 +593,7 @@ def launch_cases(cases):
         results[case.name][hook_state] = success
 
 
-launch_cases(variation_cases)
+launch_cases(common_cases)
 
 if "gcc" in compiler:
     gcc_cases = [
