@@ -8,8 +8,6 @@ from datetime import datetime
 
 from colorama import Fore, Style, init
 
-compiler = ""
-
 def run(cmd, show=True):
     if show:
         print(cmd)
@@ -35,8 +33,9 @@ def get_revision(console_txt):
     return console_txt[prev+len(search_str)+1:-6]
 
 
-def get_compiler(console_txt):
-    for line in console_txt.splitlines():
+def get_compiler():
+    output = run("conan profile show default", False)
+    for line in output.splitlines():
         line = str(line)
         if "compiler=" in line:
             comp_pos = line.find("compiler=")
@@ -151,9 +150,6 @@ class Check(object):
             set_system_rand_time()
             out = run(
                 "cd {} && conan create . {}".format(folder, user_channel))
-            # have to change
-            global compiler
-            compiler = get_compiler(out)
             bin_files = get_binary_names(out)
             hook_output(out)
             for bin_file_path in bin_files:
@@ -592,6 +588,7 @@ def launch_cases(cases):
 
         results[case.name][hook_state] = success
 
+compiler = get_compiler()
 
 launch_cases(common_cases)
 
