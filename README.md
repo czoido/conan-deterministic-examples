@@ -141,7 +141,7 @@ Again the solutions will depend on the compiler used:
 The best way to solve this is adding the flags to compiler options, for example is using `CMake`:
 
 ```
-add_definitions("-ffile-prefix-map=${CMAKE_SOURCE_DIR}=.")
+add_compile_options("-ffile-prefix-map=${CMAKE_SOURCE_DIR}=.")
 ```
 
 ## Randomness created by the compiler
