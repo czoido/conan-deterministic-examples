@@ -639,7 +639,7 @@ def launch_cases(cases):
 compiler, version = get_compiler()
 print("Using compiler {} version {}".format(compiler, version))
 
-#launch_cases(common_cases)
+launch_cases(common_cases)
 
 if "gcc" in compiler:
     gcc_cases = [
