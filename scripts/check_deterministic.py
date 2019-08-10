@@ -8,6 +8,7 @@ from datetime import datetime
 
 from colorama import Fore, Style, init
 
+
 def run(cmd, show=True):
     if show:
         print(cmd)
@@ -217,7 +218,7 @@ def print_results(results):
 
 init()
 
-checks_nothing_release = [
+checks_empty_lib = [
     {
         "folder": "../library",
         "sources":  {
@@ -234,22 +235,7 @@ checks_nothing_release = [
     }
 ]
 
-checks_nothing_debug = [
-    {
-        "folder": "../library",
-        "sources":  {
-            "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp"
-        }
-    },
-    {
-        "folder": "../library",
-        "sources":  {
-            "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp"
-        }
-    }
-]
-
-checks_nothing_release_2_dirs = [
+checks_empty_lib_2_dirs = [
     {
         "user_channel": "user/channel1",
         "folder": "../library",
@@ -266,24 +252,7 @@ checks_nothing_release_2_dirs = [
     }
 ]
 
-checks_nothing_debug_2_dirs = [
-    {
-        "user_channel": "user/channel1",
-        "folder": "../library",
-        "sources":  {
-            "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp"
-        }
-    },
-    {
-        "user_channel": "user/channel2",
-        "folder": "../library",
-        "sources":  {
-            "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp"
-        }
-    }
-]
-
-checks_nothing_debug_prefix_map = [
+checks_empty_lib_debug_prefix_map = [
     {
         "user_channel": "user/channel1",
         "folder": "../library",
@@ -302,7 +271,7 @@ checks_nothing_debug_prefix_map = [
     }
 ]
 
-checks_nothing_macro_prefix_map = [
+checks_empty_lib_macro_prefix_map = [
     {
         "user_channel": "user/channel1",
         "folder": "../library",
@@ -321,7 +290,7 @@ checks_nothing_macro_prefix_map = [
     }
 ]
 
-checks_nothing_file_prefix_map = [
+checks_empty_lib_file_prefix_map = [
     {
         "user_channel": "user/channel1",
         "folder": "../library",
@@ -340,7 +309,7 @@ checks_nothing_file_prefix_map = [
     }
 ]
 
-checks_nothing_debug_2_dirs_shared = [
+checks_empty_lib_2_dirs_shared = [
     {
         "user_channel": "user/channel1",
         "folder": "../library",
@@ -546,23 +515,58 @@ checks_consumer_empty = [
     }
 ]
 
+checks_consumer_empty_brepro = [
+    {
+        "folder": "../consumer",
+        "sources":  {
+            "../cases/consumer/main.cpp": "../consumer/src/main.cpp",
+            "../cases/consumer/CMakeListsBrepro.txt": "../consumer/CMakeLists.txt"
+        }
+    },
+    {
+        "folder": "../consumer",
+        "sources":  {
+            "../cases/consumer/main.cpp": "../consumer/src/main.cpp",
+            "../cases/consumer/CMakeListsBrepro.txt": "../consumer/CMakeLists.txt"
+        }
+    }
+]
+
+checks_empty_lib_brepro = [
+    {
+        "folder": "../library",
+        "sources":  {
+            "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
+            "../cases/lib/CMakeListsBrepro.txt": "../library/CMakeLists.txt"
+        }
+    },
+    {
+        "folder": "../library",
+        "sources":  {
+            "../cases/lib/mydetlib_base.cpp": "../library/src/mydetlib.cpp",
+            "../cases/lib/CMakeListsBrepro.txt": "../library/CMakeLists.txt"
+        }
+    }
+]
+
+
 common_cases = [
-    Case("Empty lib Release", checks_nothing_release, False),
+    Case("Empty lib Release", checks_empty_lib, False),
     Case("Consumer Release", checks_consumer_empty, False),
-    Case("Empty lib Release", checks_nothing_release, True),
-    Case("Empty lib Debug", checks_nothing_debug, False, build_type="Debug"),
-    Case("Empty lib Debug", checks_nothing_debug, True, build_type="Debug"),
-    Case("Empty lib Release, 2 dirs", checks_nothing_release_2_dirs, False),
-    Case("Empty lib Debug, 2 dirs", checks_nothing_debug_2_dirs,
+    Case("Empty lib Release", checks_empty_lib, True),
+    Case("Empty lib Debug", checks_empty_lib, False, build_type="Debug"),
+    Case("Empty lib Debug", checks_empty_lib, True, build_type="Debug"),
+    Case("Empty lib Release, 2 dirs", checks_empty_lib_2_dirs, False),
+    Case("Empty lib Debug, 2 dirs", checks_empty_lib_2_dirs,
          False, build_type="Debug"),
-    Case("Empty lib Release, 2 dirs", checks_nothing_release_2_dirs, True),
+    Case("Empty lib Release, 2 dirs", checks_empty_lib_2_dirs, True),
     Case("Empty lib Debug, 2 dirs",
-         checks_nothing_debug_2_dirs, True, build_type="Debug"),
+         checks_empty_lib_2_dirs, True, build_type="Debug"),
     Case("Empty lib Debug, 2 dirs with Debug Fix",
-         checks_nothing_debug_prefix_map, True, build_type="Debug"),
+         checks_empty_lib_debug_prefix_map, True, build_type="Debug"),
     Case("Empty lib Debug, 2 dirs shared",
-         checks_nothing_debug_2_dirs_shared, False, build_type="Debug"),
-    #Case("Empty lib Debug, 2 dirs shared",checks_nothing_debug_2_dirs_shared, True, shared=True),
+         checks_empty_lib_2_dirs_shared, False, build_type="Debug"),
+    #Case("Empty lib Debug, 2 dirs shared",checks_empty_lib_debug_2_dirs_shared, True, shared=True),
     Case("Lib using __DATE__ macro", checks_date, False),
     Case("Lib using __TIME__ macro", checks_time, False),
     Case("Lib using __FILE__ macro", checks_file, False),
@@ -585,6 +589,7 @@ common_cases = [
 
 results = {}
 
+
 def launch_cases(cases):
     for case in cases:
         hook_state, success = case.launch_case()
@@ -593,10 +598,11 @@ def launch_cases(cases):
 
         results[case.name][hook_state] = success
 
+
 compiler, version = get_compiler()
 print("Using compiler {} version {}".format(compiler, version))
 
-launch_cases(common_cases)
+#launch_cases(common_cases)
 
 if "gcc" in compiler:
     gcc_cases = [
@@ -608,18 +614,29 @@ if "gcc" in compiler:
 
     gcc_8_cases = [
         Case("Lib using __FILE__ macro, 2 dirs Macro Fix",
-             checks_nothing_macro_prefix_map, True),
+             checks_empty_lib_macro_prefix_map, True),
         Case("Lib using __FILE__ macro, Debug 2 dirs Macro Fix",
-             checks_nothing_macro_prefix_map, True, build_type="Debug"),
+             checks_empty_lib_macro_prefix_map, True, build_type="Debug"),
         Case("Lib using __FILE__ macro, Debug 2 dirs File Fix",
-             checks_nothing_file_prefix_map, True, build_type="Debug")
+             checks_empty_lib_file_prefix_map, True, build_type="Debug")
     ]
 
-    if int(version)>=8:
+    if int(version) >= 8:
         gcc_cases.extend(gcc_8_cases)
-
 
     launch_cases(gcc_cases)
 
+if "Visual Studio" in compiler:
+    msvc_cases = [
+        Case("msvc: Empty lib Release", checks_empty_lib, False),
+        Case("msvc: Empty lib Release with /Brepro", checks_empty_lib_brepro, False),
+        Case("msvc: Empty lib Debug", checks_empty_lib, False, build_type="Debug"),
+        Case("msvc: Empty lib Debug with /Brepro", checks_empty_lib_brepro, build_type="Debug"),
+        Case("msvc: Empty Consumer Release with", checks_consumer_empty),
+        Case("msvc: Empty Consumer Release with /Brepro", checks_consumer_empty_brepro),
+        Case("msvc: Empty Consumer Debug with", checks_consumer_empty, build_type="Debug"),
+        Case("msvc: Empty Consumer Debug with /Brepro", checks_consumer_empty_brepro, build_type="Debug"),
+    ]
+    launch_cases(msvc_cases)
 
 print_results(results)
