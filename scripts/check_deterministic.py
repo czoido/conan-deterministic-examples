@@ -602,7 +602,7 @@ def launch_cases(cases):
 compiler, version = get_compiler()
 print("Using compiler {} version {}".format(compiler, version))
 
-launch_cases(common_cases)
+#launch_cases(common_cases)
 
 if "gcc" in compiler:
     gcc_cases = [
@@ -635,7 +635,7 @@ if "Visual Studio" in compiler:
         Case("msvc: Empty Consumer Release with", checks_consumer_empty),
         Case("msvc: Empty Consumer Release with /Brepro", checks_consumer_empty_brepro),
         Case("msvc: Empty Consumer Debug with", checks_consumer_empty, build_type="Debug"),
-        Case("msvc: Empty Consumer Debug with /Brepro", checks_consumer_empty_brepro, build_type="Debug"),
+        Case("msvc: Empty Consumer Debug with /Brepro", checks_consumer_empty_brepro, build_type="Debug")
     ]
     launch_cases(msvc_cases)
 
