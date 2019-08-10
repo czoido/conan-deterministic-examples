@@ -37,6 +37,9 @@ def get_revision(console_txt):
 def get_compiler():
     compiler = ""
     version = ""
+    if os.environ.get('APPVEYOR') == 'True' and sys.platform == 'win32':
+        return "Visual Studio", ""
+
     output = run("conan profile show default", False)
     for line in output.splitlines():
         line = str(line)
@@ -201,7 +204,7 @@ class Case(object):
 
 def print_results(results):
     header_justify_s = 10
-    header_justify_l = 45
+    header_justify_l = 65
     print(Fore.LIGHTMAGENTA_EX +
           "".ljust(header_justify_l) + "HOOK OFF".ljust(header_justify_s) + "HOOK ON".ljust(header_justify_s) + Fore.RESET)
     result_msg = {
@@ -549,6 +552,40 @@ checks_empty_lib_brepro = [
     }
 ]
 
+checks_lib_d1nodatetime = [
+    {
+        "folder": "../library",
+        "sources":  {
+            "../cases/lib/mydetlib_macros_date_time.cpp": "../library/src/mydetlib.cpp",
+            "../cases/lib/CMakeListsd1nodatetime.txt": "../library/CMakeLists.txt"
+        }
+    },
+    {
+        "folder": "../library",
+        "sources":  {
+            "../cases/lib/mydetlib_macros_date_time.cpp": "../library/src/mydetlib.cpp",
+            "../cases/lib/CMakeListsd1nodatetime.txt": "../library/CMakeLists.txt"
+        }
+    }
+]
+
+
+checks_consumer_d1nodatetime = [
+    {
+        "folder": "../library",
+        "sources":  {
+            "../cases/consumer/mydetlib_macros_date_time.cpp": "../consumer/src/main.cpp",
+            "../cases/consumer/CMakeListsd1nodatetime.txt": "../consumer/CMakeLists.txt"
+        }
+    },
+    {
+        "folder": "../library",
+        "sources":  {
+            "../cases/consumer/mydetlib_macros_date_time.cpp": "../consumer/src/main.cpp",
+            "../cases/consumer/CMakeListsd1nodatetime.txt": "../consumer/CMakeLists.txt"
+        }
+    }
+]
 
 common_cases = [
     Case("Empty lib Release", checks_empty_lib, False),
@@ -602,7 +639,7 @@ def launch_cases(cases):
 compiler, version = get_compiler()
 print("Using compiler {} version {}".format(compiler, version))
 
-launch_cases(common_cases)
+#launch_cases(common_cases)
 
 if "gcc" in compiler:
     gcc_cases = [
@@ -628,14 +665,16 @@ if "gcc" in compiler:
 
 if "Visual Studio" in compiler:
     msvc_cases = [
-        Case("msvc: Empty lib Release", checks_empty_lib, False),
         Case("msvc: Empty lib Release with /Brepro", checks_empty_lib_brepro, False),
-        Case("msvc: Empty lib Debug", checks_empty_lib, False, build_type="Debug"),
-        Case("msvc: Empty lib Debug with /Brepro", checks_empty_lib_brepro, build_type="Debug"),
-        Case("msvc: Empty Consumer Release with", checks_consumer_empty),
+        Case("msvc: Empty lib Release", checks_empty_lib, False),
+        Case("msvc: Empty Consumer Release", checks_consumer_empty),
         Case("msvc: Empty Consumer Release with /Brepro", checks_consumer_empty_brepro),
-        Case("msvc: Empty Consumer Debug with", checks_consumer_empty, build_type="Debug"),
-        Case("msvc: Empty Consumer Debug with /Brepro", checks_consumer_empty_brepro, build_type="Debug")
+        Case("msvc: Empty lib Debug with /Brepro", checks_empty_lib_brepro, build_type="Debug"),
+        Case("msvc: Empty lib Debug", checks_empty_lib, False, build_type="Debug"),
+        Case("msvc: Empty Consumer Debug", checks_consumer_empty, build_type="Debug"),
+        Case("msvc: Empty Consumer Debug with /Brepro", checks_consumer_empty_brepro, build_type="Debug"),
+        Case("msvc: Lib using __DATE__ and __TIME__ with d1nodatetime", checks_lib_d1nodatetime, False),
+        Case("msvc: Consumer using __DATE__ and __TIME__ with d1nodatetime", checks_consumer_d1nodatetime, False)
     ]
     launch_cases(msvc_cases)
 

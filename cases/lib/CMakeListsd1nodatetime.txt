@@ -1,0 +1,22 @@
+cmake_minimum_required(VERSION 3.0)
+project(DeterministicHello)
+
+SET(CMAKE_CXX_STANDARD 11)
+SET(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup()
+
+set(LIB_SOURCES ./src/mydetlib.cpp)
+
+add_library(mydetlib ${LIB_SOURCES})
+
+set_target_properties(
+    mydetlib
+    PROPERTIES STATIC_LIBRARY_OPTIONS "/Brepro /d1nodatetime"
+)
+
+
+if (BUILD_SHARED_LIBS)
+    target_compile_definitions(mydetlib PUBLIC EXPORTDLL)
+endif()
