@@ -192,5 +192,5 @@ endforeach()
 - https://github.com/google/syzygy
 - https://github.com/llvm-mirror/llvm/tree/master/tools
 - https://github.com/nh2/ar-timestamp-wiper
-
-
+- https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/fc
+- https://try.diffoscope.org/
