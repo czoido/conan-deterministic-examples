@@ -7,9 +7,15 @@ SET(CMAKE_CXX_STANDARD_REQUIRED ON)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
-add_compile_options("-fmacro-prefix-map=${CMAKE_SOURCE_DIR}=.")
+set(LIB_SOURCES ./src/mydetlib.cpp)
 
-add_library(mydetlib ./src/mydetlib.cpp)
+add_library(mydetlib ${LIB_SOURCES})
+
+set_target_properties(
+    mydetlib
+    PROPERTIES STATIC_LIBRARY_OPTIONS "/Brepro"
+)
+
 
 if (BUILD_SHARED_LIBS)
     target_compile_definitions(mydetlib PUBLIC EXPORTDLL)

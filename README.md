@@ -72,10 +72,38 @@ not reproducible:
 
 The solutions depend on the compiler used:
 
-- `msvc` can neither set the timestamps for the macros or avoid introducing time information from the `PE`
-  format with environment variables or compiler flags. The only way to remove this information from the
-  binaries is parsing the file format and replacing the bytes that contain non-deterministic information. That
-  can be done in the `post_build` step launching patching tools.
+#### Microsoft Visual Studio
+
+Microsoft Visual Studio has an linker flag `/Brepro` that is undocumented by Microsoft. That flag sets the
+TimeStamps from the `Portable Executable` format to a `-1` value as can be seen in the attached images. 
+
+![Without /Brepro](https://raw.githubusercontent.com/czoido/conan-deterministic-examples/master/assets/bin_with_brepro.png)![With /Brepro](https://raw.githubusercontent.com/czoido/conan-deterministic-examples/master/assets/bin_without_brepro.png)
+
+To activate that flag with CMake we will have to add this lines if creating a `.exe`:
+
+```CMake
+add_link_options("/Brepro")
+```
+
+or this for `.lib`
+
+```CMake
+set_target_properties(
+    TARGET
+    PROPERTIES STATIC_LIBRARY_OPTIONS "/Brepro"
+)
+```
+
+The problem with this flag makes the binaries reproducible (regarding to TimeStamps in the file format) if our
+final binary is a `.exe` but will not remove all TimeStamps if we are compiling a `.lib`. In fact it does not
+remove the `TimeDateStamp` field from the  [COFF File
+Header](https://docs.microsoft.com/en-us/windows/win32/debug/pe-format#file-headers) for the `.lib` files. The
+only way to remove this information from the `.lib` binaries is parsing the file format and replacing the
+bytes that contain non-deterministic information. That can be done in the `post_build` step launching patching
+tools.
+
+
+#### GCC and CLANG
 
 - `gcc` detects the existence of the `SOURCE_DATE_EPOCH` environment variable. If this variable is set, its
   value specifies a UNIX timestamp to be used in replacement of the current date and time in the `__DATE__`
@@ -140,8 +168,8 @@ Again the solutions will depend on the compiler used:
 
 The best way to solve this is adding the flags to compiler options, for example is using `CMake`:
 
-```
-add_definitions("-ffile-prefix-map=${CMAKE_SOURCE_DIR}=.")
+```CMake
+add_compile_options("-ffile-prefix-map=${CMAKE_SOURCE_DIR}=.")
 ```
 
 ## Randomness created by the compiler
@@ -154,7 +182,7 @@ also used to place unique stamps in coverage data files and the object files tha
 has to be different for each source file. One option would be to set it to the checksum of the file so the
 probabilty of colission is very low. For example in CMake it would be like this:
 
-```
+```CMake
 set(LIB_SOURCES
     ./src/source1.cpp
     ./src/source2.cpp
@@ -181,6 +209,7 @@ endforeach()
 - https://stackoverflow.com/questions/1180852/deterministic-builds-under-windows
 - https://docs.microsoft.com/en-us/windows/win32/debug/pe-format#archive-library-file-format
 - https://devblogs.microsoft.com/oldnewthing/20180103-00/?p=97705
+- https://www.geoffchappell.com/studies/msvc/link/link/options/brepro.htm?tx=37&ts=0,267
 
 ### Tools
 
