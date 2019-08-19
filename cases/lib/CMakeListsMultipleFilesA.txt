@@ -1,0 +1,20 @@
+cmake_minimum_required(VERSION 3.0)
+project(DeterministicHello)
+
+SET(CMAKE_CXX_STANDARD 11)
+SET(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup()
+
+add_library(mydetlib ./src/mydetlib.cpp
+                     ./src/sources0.cpp
+                     ./src/sources1.cpp
+                     ./src/sources2.cpp
+                     ./include/sources0.hpp
+                     ./include/sources1.hpp
+                     ./include/sources2.hpp)
+
+if (BUILD_SHARED_LIBS)
+    target_compile_definitions(mydetlib PUBLIC EXPORTDLL)
+endif()

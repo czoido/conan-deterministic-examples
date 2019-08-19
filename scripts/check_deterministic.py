@@ -587,6 +587,53 @@ checks_consumer_d1nodatetime = [
     }
 ]
 
+checks_empty_lib_multiple_files_same_order = [
+    {
+        "folder": "../library",
+        "sources":  {
+            "../cases/lib/multiple_files_lib.cpp": "../library/src/mydetlib.cpp",
+            "../cases/lib/CMakeListsMultipleFilesA.txt": "../library/CMakeLists.txt",
+            "../cases/lib/sources0.cpp": "../library/src/sources0.cpp",
+            "../cases/lib/sources1.cpp": "../library/src/sources1.cpp",
+            "../cases/lib/sources2.cpp": "../library/src/sources2.cpp",
+            "../cases/lib/sources0.hpp": "../library/include/sources0.hpp",
+            "../cases/lib/sources1.hpp": "../library/include/sources1.hpp",
+            "../cases/lib/sources2.hpp": "../library/include/sources2.hpp"
+        }
+    },
+    {
+        "folder": "../library",
+        "sources":  {
+            "../cases/lib/multiple_files_lib.cpp": "../library/src/mydetlib.cpp",
+            "../cases/lib/CMakeListsMultipleFilesA.txt": "../library/CMakeLists.txt",
+        }
+    }
+]
+
+checks_empty_lib_multiple_files_different_order = [
+    {
+        "folder": "../library",
+        "sources":  {
+            "../cases/lib/multiple_files_lib.cpp": "../library/src/mydetlib.cpp",
+            "../cases/lib/CMakeListsMultipleFilesA.txt": "../library/CMakeLists.txt",
+            "../cases/lib/sources0.cpp": "../library/src/sources0.cpp",
+            "../cases/lib/sources1.cpp": "../library/src/sources1.cpp",
+            "../cases/lib/sources2.cpp": "../library/src/sources2.cpp",
+            "../cases/lib/sources0.hpp": "../library/include/sources0.hpp",
+            "../cases/lib/sources1.hpp": "../library/include/sources1.hpp",
+            "../cases/lib/sources2.hpp": "../library/include/sources2.hpp"
+        }
+    },
+    {
+        "folder": "../library",
+        "sources":  {
+            "../cases/lib/multiple_files_lib.cpp": "../library/src/mydetlib.cpp",
+            "../cases/lib/CMakeListsMultipleFilesB.txt": "../library/CMakeLists.txt",
+        }
+    }
+]
+
+
 common_cases = [
     Case("Empty lib Release", checks_empty_lib, False),
     Case("Consumer Release", checks_consumer_empty, False),
@@ -603,6 +650,10 @@ common_cases = [
          checks_empty_lib_debug_prefix_map, True, build_type="Debug"),
     Case("Empty lib Debug, 2 dirs shared",
          checks_empty_lib_2_dirs_shared, False, build_type="Debug"),
+    Case("Empty lib Multiple Files Same Order",
+         checks_empty_lib_multiple_files_same_order, True),
+    Case("Empty lib Multiple Files Different Order",
+         checks_empty_lib_multiple_files_different_order, True),
     #Case("Empty lib Debug, 2 dirs shared",checks_empty_lib_debug_2_dirs_shared, True, shared=True),
     Case("Lib using __DATE__ macro", checks_date, False),
     Case("Lib using __TIME__ macro", checks_time, False),
@@ -665,16 +716,24 @@ if "gcc" in compiler:
 
 if "Visual Studio" in compiler:
     msvc_cases = [
-        Case("msvc: Empty lib Release with /Brepro", checks_empty_lib_brepro, False),
+        Case("msvc: Empty lib Release with /Brepro",
+             checks_empty_lib_brepro, False),
         Case("msvc: Empty lib Release", checks_empty_lib, False),
         Case("msvc: Empty Consumer Release", checks_consumer_empty),
-        Case("msvc: Empty Consumer Release with /Brepro", checks_consumer_empty_brepro),
-        Case("msvc: Empty lib Debug with /Brepro", checks_empty_lib_brepro, build_type="Debug"),
-        Case("msvc: Empty lib Debug", checks_empty_lib, False, build_type="Debug"),
-        Case("msvc: Empty Consumer Debug", checks_consumer_empty, build_type="Debug"),
-        Case("msvc: Empty Consumer Debug with /Brepro", checks_consumer_empty_brepro, build_type="Debug"),
-        Case("msvc: Lib using __DATE__ and __TIME__ with d1nodatetime", checks_lib_d1nodatetime, False),
-        Case("msvc: Consumer using __DATE__ and __TIME__ with d1nodatetime", checks_consumer_d1nodatetime, False)
+        Case("msvc: Empty Consumer Release with /Brepro",
+             checks_consumer_empty_brepro),
+        Case("msvc: Empty lib Debug with /Brepro",
+             checks_empty_lib_brepro, build_type="Debug"),
+        Case("msvc: Empty lib Debug", checks_empty_lib,
+             False, build_type="Debug"),
+        Case("msvc: Empty Consumer Debug",
+             checks_consumer_empty, build_type="Debug"),
+        Case("msvc: Empty Consumer Debug with /Brepro",
+             checks_consumer_empty_brepro, build_type="Debug"),
+        Case("msvc: Lib using __DATE__ and __TIME__ with d1nodatetime",
+             checks_lib_d1nodatetime, False),
+        Case("msvc: Consumer using __DATE__ and __TIME__ with d1nodatetime",
+             checks_consumer_d1nodatetime, False)
     ]
     launch_cases(msvc_cases)
 
