@@ -9,7 +9,7 @@ class DeterministicLibConan(ConanFile):
     name = "mydetlib"
     version = "1.0"
     license = "MIT"
-    exports_sources = "CMakeLists.txt", "src/mydetlib.cpp", "include/mydetlib.hpp"
+    exports_sources = "CMakeLists.txt", "src/*.cpp", "include/*.hpp"
     options = {"shared": [True, False],
                "fPIC": [True, False]}
     default_options = "shared=False", "fPIC=True"
