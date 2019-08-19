@@ -4,17 +4,16 @@
 
 # What are deterministic builds ?
 
-Deterministic builds is the process of building sources at the same revision with the same build environment
+A deterministic build is the process of building sources at the same revision with the same build environment
 and build instructions producing exactly the same binary in two builds, even if they are made on different
 machines, build directories and with different names. They are also sometimes called reproducible or hermetic
 builds.
 
-Let's note that deterministic builds are not something that happens naturally. Normal projects do not produce
-deterministic builds and the reasons that they are not produced can be different for each operating system and
-compiler.
+Deterministic builds are not something that happens naturally. Normal projects do not produce deterministic
+builds and the reasons that they are not produced can be different for each operating system and compiler.
 
 Deterministic builds should be guaranteed for a given *build environment*. That means that certain variables
-such as the operating system, build system versions, target architecture should remain the same between
+such as the *operating system*, *build system versions* and *target architecture* should remain the same between
 different builds.
 
 There are lots of efforts coming from different organizations in the past years to achieve deterministic
@@ -28,25 +27,24 @@ There are two main reasons why deterministic builds are important:
 
  - **Security**. Modifying binaries instead of the upstream source code can make the changes invisible for the
    original authors. This can be fatal in safety critical environments such as medical, aerospace and
-   automotive. So promising indentical results for given inputs allows third parties to come to a consensus
-   con a *correct* result.
+   automotive. Promising indentical results for given inputs allows third parties to come to a consensus on a
+   *correct* result.
 
 - **Storaging binaries**. If you want to have a repository to store your binaries you do not want to generate
-  binaries binaries with random checksums when sources at the same revision. That could lead the system to
-  make store different binaries that in fact should be the same.
+  binaries with random checksums from sources at the same revision. That could lead the repository system to
+  store different binaries as different versions when they should be the same.
 
 The second case could be a concern if you are using Conan to manage your packages. For example, if you have
-revisions enabled and are working in Windows or MacOs the most simple library will lead to two different
-binaries  
+revisions enabled and are working in Windows or MacOs the most simple library will lead binaries with
+different checksums because of the timestamps included in the library formats for these Operating Systems.
 
 # Sources of variation
 
-There are many different reasons for that your builds can end being non-deterministic. Reasons will vary
-between different operating systems and compilers. Not all compilers or linkers have the option to introduce
-certain flags to fix the sources of indeterminism. In `gcc` and `clang` for example there are some options or
-environment variables that can to minimize the indeterminisitic behaviour but using `msvc` you will probably
-need to patch the builtbinaries as there are no options available to prevent the propagation of certain
-information to the binaries.
+There are many different factors that can make your builds *non-deterministic*. Factors will vary between
+different operating systems and compilers. Each compiler has specific options to to fix the sources of
+indeterminism. To date `gcc` and `clang` are the ones that incorporate more options to fix the sources of
+variation. For `msvc` there are some undocumented options that you can try but in the end you will probably
+need to patch the binaries to get deterministic builds.
 
 This repository contains a python script called `check_deterministic.py` which produces binaries affected by
 different causes of indeterminism and tries to fix them two ways:
@@ -75,7 +73,7 @@ The solutions depend on the compiler used:
 #### Microsoft Visual Studio
 
 Microsoft Visual Studio has an linker flag `/Brepro` that is undocumented by Microsoft. That flag sets the
-TimeStamps from the `Portable Executable` format to a `-1` value as can be seen in the attached images. 
+timestamps from the `Portable Executable` format to a `-1` value as can be seen in the attached images. 
 
 ![Without /Brepro](https://raw.githubusercontent.com/czoido/conan-deterministic-examples/master/assets/bin_with_brepro.png)![With /Brepro](https://raw.githubusercontent.com/czoido/conan-deterministic-examples/master/assets/bin_without_brepro.png)
 
@@ -94,13 +92,13 @@ set_target_properties(
 )
 ```
 
-The problem with this flag makes the binaries reproducible (regarding to TimeStamps in the file format) if our
-final binary is a `.exe` but will not remove all TimeStamps if we are compiling a `.lib`. In fact it does not
-remove the `TimeDateStamp` field from the  [COFF File
+The problem is that this flag makes the binaries reproducible (regarding to timestamps in the file format) if
+our final binary is a `.exe` but will not remove all timestamps if we are compiling a `.lib`. In fact it does
+not remove the `TimeDateStamp` field from the  [COFF File
 Header](https://docs.microsoft.com/en-us/windows/win32/debug/pe-format#file-headers) for the `.lib` files. The
-only way to remove this information from the `.lib` binaries is parsing the file format and replacing the
-bytes that contain non-deterministic information. That can be done in the `post_build` step launching patching
-tools.
+only way to remove this information from the `.lib` binaries is patching the `.lib` substituting the bytes
+corresponding to the `TimeDateStamp` field with any known value. This patching process can be done in the
+`post_build` step.
 
 
 #### GCC and CLANG
@@ -153,8 +151,8 @@ Again the solutions will depend on the compiler used:
 
 - `msvc` can't set options to avoid the propagation of this information to the binary files. The only way to
   get reproducible binaries is again using a Hook to strip this information in the build step. Note that as we
-  are patching the binaries to achieve reproducible binaries folders of the same length in characters should
-  be used for each build.  
+  are patching the binaries to achieve reproducible binaries the folders used for different builds should have
+  the same length in characters.
 
 - `gcc` has three compiler flags to work around the issue:
     - `-fdebug-prefix-map=OLD=NEW` can strip directory prefixes from debug info.
@@ -174,13 +172,14 @@ add_compile_options("-ffile-prefix-map=${CMAKE_SOURCE_DIR}=.")
 
 ## Randomness created by the compiler
 
-This problem arises for example in `gcc` when Link-Time Optimizations are activated (with the `-flto` flag).
-This options introduces random generated names in the binary files. The only way to avoid this problem is to
-use `-frandom-seed` flag. This option provides a seed that `gcc` uses when it would otherwise use random
-numbers. It is used to generate certain symbol names that have to be different in every compiled file.  It is
-also used to place unique stamps in coverage data files and the object files that produce them. This setting
-has to be different for each source file. One option would be to set it to the checksum of the file so the
-probabilty of colission is very low. For example in CMake it would be like this:
+This problem arises for example in `gcc` when [Link-Time
+Optimizations](https://gcc.gnu.org/wiki/LinkTimeOptimization) are activated (with the `-flto` flag). This
+options introduces random generated names in the binary files. The only way to avoid this problem is to use
+`-frandom-seed` flag. This option provides a seed that `gcc` uses when it would otherwise use random numbers.
+It is used to generate certain symbol names that have to be different in every compiled file. It is also used
+to place unique stamps in coverage data files and the object files that produce them. This setting has to be
+different for each source file. One option would be to set it to the checksum of the file so the probabilty of
+colission is very low. For example in CMake it could be made with a function like this:
 
 ```CMake
 set(LIB_SOURCES
