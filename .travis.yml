@@ -16,6 +16,12 @@ linux: &linux
      - conan config set general.revisions_enabled=True
      - cat $HOME/.conan/conan.conf
      - ls $HOME/.conan/hooks
+   before_install:
+     - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+     - sudo apt update
+     - sudo apt-get install gcc-8 g++-8
+     - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 60
+     - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 60
 
 osx: &osx
    os: osx
