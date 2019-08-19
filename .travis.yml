@@ -3,7 +3,7 @@ linux: &linux
    dist: xenial
    language: python
    python: "3.7"
-   compiler: clang-8
+   compiler: gcc-8
    install:
      - chmod +x .ci/travis/install.sh
      - .ci/travis/install.sh
