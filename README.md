@@ -27,10 +27,10 @@ There are two main reasons why deterministic builds are important:
 
  - **Security**. Modifying binaries instead of the upstream source code can make the changes invisible for the
    original authors. This can be fatal in safety critical environments such as medical, aerospace and
-   automotive. Promising indentical results for given inputs allows third parties to come to a consensus on a
+   automotive. Promising identical results for given inputs allows third parties to come to a consensus on a
    *correct* result.
 
-- **Storaging binaries**. If you want to have a repository to store your binaries you do not want to generate
+- **Storing binaries**. If you want to have a repository to store your binaries you do not want to generate
   binaries with random checksums from sources at the same revision. That could lead the repository system to
   store different binaries as different versions when they should be the same.
 
@@ -41,14 +41,14 @@ different checksums because of the timestamps included in the library formats fo
 # Sources of variation
 
 There are many different factors that can make your builds *non-deterministic*. Factors will vary between
-different operating systems and compilers. Each compiler has specific options to to fix the sources of
+different operating systems and compilers. Each compiler has specific options to fix the sources of
 indeterminism. To date `gcc` and `clang` are the ones that incorporate more options to fix the sources of
 variation. For `msvc` there are some undocumented options that you can try but in the end you will probably
 need to patch the binaries to get deterministic builds.
 
 # Fixing the problem
 
-For the examples presented here there are two aproaches to fix the causes of indeterminism:
+For the examples presented here there are two approaches to fix the causes of indeterminism:
 
 - Applying a Conan hook. This hook can be used to setup environment variables in the `pre_build` step
   and patch binaries in `post_build`. The intention of the annexed hook named
@@ -67,7 +67,7 @@ make them not reproducible:
 - The use of `__DATE__` or `__TIME__` macros in the sources.
 
 - When the definition of the file format forces to store time information in the object files. This
-  is the case of `Portable Executable` fornmat in Windows and `Mach-O` in MacOs. In Linux `ELF` files
+  is the case of `Portable Executable` format in Windows and `Mach-O` in MacOs. In Linux `ELF` files
   do not encode any kind of timestamp. 
 
 ### Possible solutions
@@ -97,7 +97,7 @@ set_target_properties(
 )
 ```
 
-The problem is that this flag makes the binaries reproducible (regarding to timestamps in the file
+The problem is that this flag makes the binaries reproducible (regarding timestamps in the file
 format) if our final binary is a `.exe` but will not remove all timestamps if we are compiling a
 `.lib`. In fact it does not remove the `TimeDateStamp` field from the  [COFF File
 Header](https://docs.microsoft.com/en-us/windows/win32/debug/pe-format#file-headers) for the `.lib`
@@ -185,7 +185,7 @@ problem is to use `-frandom-seed` flag. This option provides a seed that `gcc` u
 otherwise use random numbers. It is used to generate certain symbol names that have to be different
 in every compiled file. It is also used to place unique stamps in coverage data files and the object
 files that produce them. This setting has to be different for each source file. One option would be
-to set it to the checksum of the file so the probabilty of colission is very low. For example in
+to set it to the checksum of the file so the probability of collision is very low. For example in
 CMake it could be made with a function like this:
 
 ```CMake
@@ -203,7 +203,7 @@ endforeach()
 
 ## File order feeding to the build system
 
-File ordering can be a problem if directories are read to return the files the contain. For example Unix does not have a deterministic order in which `readdir()` and `listdir()` should return the contents of a directory, so trusting in this functions to feed the build system could produce undeterministic builds.
+File ordering can be a problem if directories are read to return the files the contain. For example Unix does not have a deterministic order in which `readdir()` and `listdir()` should return the contents of a directory, so trusting in this functions to feed the build system could produce non deterministic builds.
 
 The same problem arises for example if your build system stores the files for the linker in a container that can return the elements in a non-deterministic order. This would make that each time files were linked in different order and produce different binaries.
 
