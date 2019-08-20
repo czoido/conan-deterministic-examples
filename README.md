@@ -203,7 +203,7 @@ endforeach()
 
 ## File order feeding to the build system
 
-File ordering can be a problem if directories are read to return the files the contain. For example Unix does not have a deterministic order in which `readdir()` and `listdir()` should return the contents of a directory, so trusting in this functions to feed the build system could produce non deterministic builds.
+File ordering can be a problem if directories are read to return the files contain. For example Unix does not have a deterministic order in which `readdir()` and `listdir()` should return the contents of a directory, so trusting in this functions to feed the build system could produce non deterministic builds.
 
 The same problem arises for example if your build system stores the files for the linker in a container that can return the elements in a non-deterministic order. This would make that each time files were linked in different order and produce different binaries.
 
