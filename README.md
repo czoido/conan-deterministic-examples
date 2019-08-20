@@ -46,25 +46,29 @@ indeterminism. To date `gcc` and `clang` are the ones that incorporate more opti
 variation. For `msvc` there are some undocumented options that you can try but in the end you will probably
 need to patch the binaries to get deterministic builds.
 
-This repository contains a python script called `check_deterministic.py` which produces binaries affected by
-different causes of indeterminism and tries to fix them two ways:
-- Applying a Conan hook. This hook can be used to setup environment variables in the `pre_build` step and
-  patch binaries in `post_build`. The intention of the annexed hook named `deterministic-build.py` is to show
-  the tools that can be used to produce deterministic builds but not to enter in much detail in how to do it. 
-- Modifying compiler/linker flags in the `CMakeLists.txt`.
+# Fixing the problem
 
-Here are the most common sources of indeterminism that can happen and possible solutions to avoid them.
+For the examples presented here there are two aproaches to fix the causes of indeterminism:
+
+- Applying a Conan hook. This hook can be used to setup environment variables in the `pre_build` step
+  and patch binaries in `post_build`. The intention of the annexed hook named
+  `deterministic-build.py` is to show the tools that can be used to produce deterministic builds but
+  not to enter in much detail in how to do it. 
+- Modifying compiler/linker flags. This can be done modifying the `CMakeLists.txt` if using CMake.
+
+Here are the most common sources of indeterminism that can happen and possible solutions to avoid
+them.
 
 ## Timestamps introduced by the compiler / linker
 
-There are two main reasons for that our binaries could end up containing time information that will make them
-not reproducible:
+There are two main reasons for that our binaries could end up containing time information that will
+make them not reproducible:
 
 - The use of `__DATE__` or `__TIME__` macros in the sources.
 
-- When the definition of the file format forces to store time information in the object files. This is the
-  case of `Portable Executable` fornmat in Windows and `Mach-O` in MacOs. In Linux `ELF` files do not encode
-  any kind of timestamp. 
+- When the definition of the file format forces to store time information in the object files. This
+  is the case of `Portable Executable` fornmat in Windows and `Mach-O` in MacOs. In Linux `ELF` files
+  do not encode any kind of timestamp. 
 
 ### Possible solutions
 
@@ -72,8 +76,9 @@ The solutions depend on the compiler used:
 
 #### Microsoft Visual Studio
 
-Microsoft Visual Studio has an linker flag `/Brepro` that is undocumented by Microsoft. That flag sets the
-timestamps from the `Portable Executable` format to a `-1` value as can be seen in the attached images. 
+Microsoft Visual Studio has an linker flag `/Brepro` that is undocumented by Microsoft. That flag
+sets the timestamps from the `Portable Executable` format to a `-1` value as can be seen in the
+attached images. 
 
 ![Without /Brepro](https://raw.githubusercontent.com/czoido/conan-deterministic-examples/master/assets/bin_with_brepro.png)![With /Brepro](https://raw.githubusercontent.com/czoido/conan-deterministic-examples/master/assets/bin_without_brepro.png)
 
@@ -92,27 +97,28 @@ set_target_properties(
 )
 ```
 
-The problem is that this flag makes the binaries reproducible (regarding to timestamps in the file format) if
-our final binary is a `.exe` but will not remove all timestamps if we are compiling a `.lib`. In fact it does
-not remove the `TimeDateStamp` field from the  [COFF File
-Header](https://docs.microsoft.com/en-us/windows/win32/debug/pe-format#file-headers) for the `.lib` files. The
-only way to remove this information from the `.lib` binaries is patching the `.lib` substituting the bytes
-corresponding to the `TimeDateStamp` field with any known value. This patching process can be done in the
-`post_build` step.
+The problem is that this flag makes the binaries reproducible (regarding to timestamps in the file
+format) if our final binary is a `.exe` but will not remove all timestamps if we are compiling a
+`.lib`. In fact it does not remove the `TimeDateStamp` field from the  [COFF File
+Header](https://docs.microsoft.com/en-us/windows/win32/debug/pe-format#file-headers) for the `.lib`
+files. The only way to remove this information from the `.lib` binaries is patching the `.lib`
+substituting the bytes corresponding to the `TimeDateStamp` field with any known value. This patching
+process can be done in the `post_build` step.
 
 
 #### GCC and CLANG
 
-- `gcc` detects the existence of the `SOURCE_DATE_EPOCH` environment variable. If this variable is set, its
-  value specifies a UNIX timestamp to be used in replacement of the current date and time in the `__DATE__`
-  and `__TIME__` macros, so that the embedded timestamps become reproducible. The value can be set to a known
-  timestamp such as the last modification time of the source or package.
+- `gcc` detects the existence of the `SOURCE_DATE_EPOCH` environment variable. If this variable is
+  set, its value specifies a UNIX timestamp to be used in replacement of the current date and time in
+  the `__DATE__` and `__TIME__` macros, so that the embedded timestamps become reproducible. The
+  value can be set to a known timestamp such as the last modification time of the source or package.
 
-- `clang` makes use of `ZERO_AR_DATE` that if set, resets the timestamp that is introduced in the binary
-  setting it to epoch 0.
+- `clang` makes use of `ZERO_AR_DATE` that if set, resets the timestamp that is introduced in the
+  binary setting it to epoch 0.
 
-These variables can be set by the Conan hook in the `pre_build` step calling a function like `set_environment`
-and the restored if necessary in the `post_build` step with something like `reset_environment`. 
+These variables can be set by the Conan hook in the `pre_build` step calling a function like
+`set_environment` and the restored if necessary in the `post_build` step with something like
+`reset_environment`. 
 
 ```python
 def set_environment(self):
@@ -139,8 +145,8 @@ def reset_environment(self):
 
 ## Build folder information propagated to binaries
 
-If the same sources are compiled in different folders sometimes folder information is propagated to the
-binaries. This can happen mainly for two reasons:
+If the same sources are compiled in different folders sometimes folder information is propagated to
+the binaries. This can happen mainly for two reasons:
 
 - Use of macros that contain current file information like `__FILE__` macro.
 - Creating debug binaries that store information of where the sources are.
@@ -149,20 +155,20 @@ binaries. This can happen mainly for two reasons:
 
 Again the solutions will depend on the compiler used:
 
-- `msvc` can't set options to avoid the propagation of this information to the binary files. The only way to
-  get reproducible binaries is again using a Hook to strip this information in the build step. Note that as we
-  are patching the binaries to achieve reproducible binaries the folders used for different builds should have
-  the same length in characters.
+- `msvc` can't set options to avoid the propagation of this information to the binary files. The only
+  way to get reproducible binaries is again using a Hook to strip this information in the build step.
+  Note that as we are patching the binaries to achieve reproducible binaries the folders used for
+  different builds should have the same length in characters.
 
 - `gcc` has three compiler flags to work around the issue:
     - `-fdebug-prefix-map=OLD=NEW` can strip directory prefixes from debug info.
-    - `-fmacro-prefix-map=OLD=NEW` is available since `gcc 8` and addresses irreproducibility due to the use
-      of `__FILE__` macro.
-    - `-ffile-prefix-map=OLD=NEW` is available sice `gcc 8` and is the union of `-fdebug-prefix-map` and
-      `-fmacro-prefix-map`
+    - `-fmacro-prefix-map=OLD=NEW` is available since `gcc 8` and addresses irreproducibility due to
+      the use of `__FILE__` macro.
+    - `-ffile-prefix-map=OLD=NEW` is available sice `gcc 8` and is the union of `-fdebug-prefix-map`
+      and `-fmacro-prefix-map`
 
-- `clang` supports `-fdebug-prefix-map=OLD=NEW` from version 3.8 and is working on supporting the other two
-  flags for future versions.
+- `clang` supports `-fdebug-prefix-map=OLD=NEW` from version 3.8 and is working on supporting the
+  other two flags for future versions.
 
 The best way to solve this is adding the flags to compiler options, for example is using `CMake`:
 
@@ -173,13 +179,14 @@ add_compile_options("-ffile-prefix-map=${CMAKE_SOURCE_DIR}=.")
 ## Randomness created by the compiler
 
 This problem arises for example in `gcc` when [Link-Time
-Optimizations](https://gcc.gnu.org/wiki/LinkTimeOptimization) are activated (with the `-flto` flag). This
-options introduces random generated names in the binary files. The only way to avoid this problem is to use
-`-frandom-seed` flag. This option provides a seed that `gcc` uses when it would otherwise use random numbers.
-It is used to generate certain symbol names that have to be different in every compiled file. It is also used
-to place unique stamps in coverage data files and the object files that produce them. This setting has to be
-different for each source file. One option would be to set it to the checksum of the file so the probabilty of
-colission is very low. For example in CMake it could be made with a function like this:
+Optimizations](https://gcc.gnu.org/wiki/LinkTimeOptimization) are activated (with the `-flto` flag).
+This options introduces random generated names in the binary files. The only way to avoid this
+problem is to use `-frandom-seed` flag. This option provides a seed that `gcc` uses when it would
+otherwise use random numbers. It is used to generate certain symbol names that have to be different
+in every compiled file. It is also used to place unique stamps in coverage data files and the object
+files that produce them. This setting has to be different for each source file. One option would be
+to set it to the checksum of the file so the probabilty of colission is very low. For example in
+CMake it could be made with a function like this:
 
 ```CMake
 set(LIB_SOURCES
@@ -193,12 +200,6 @@ foreach(_file ${LIB_SOURCES})
     set_property(SOURCE ${_file} APPEND_STRING PROPERTY COMPILE_FLAGS "-frandom-seed=0x${checksum}")
 endforeach()
 ```
-
-## File order feeding to the build system
-
-## Value initialization
-
-...
 
 ### References
 
